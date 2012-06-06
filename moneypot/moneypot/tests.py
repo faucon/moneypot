@@ -25,8 +25,9 @@ class TestPot(unittest.TestCase):
 
     def test_sum(self):
         from moneypot.models import Participant
+        import datetime
         pot = self._makeOne()
         alice = Participant(name='Alice', email='alice@example.org')
         pot.participants.append(alice)
-        alice.add_expense(description='Water', amount=10)
+        alice.add_expense(description='Water', amount=10, date=datetime.date.today())
         self.assertEqual(pot.sum, 10)
