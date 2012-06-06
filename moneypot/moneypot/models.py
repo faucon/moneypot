@@ -7,10 +7,8 @@ from sqlalchemy.ext.declarative import declarative_base
 
 from sqlalchemy.exc import IntegrityError
 
-from sqlalchemy import (Integer,
-        Unicode,
-        Column,
-        Enum)
+from sqlalchemy import (Column,
+        Integer, Unicode, Enum, Float, Date, PickleType)
 
 
 from zope.sqlalchemy import ZopeTransactionExtension
@@ -23,7 +21,7 @@ class Pot(Base):
     __tablename__ = 'pot'
     id = Column(Integer, primary_key=True)
     name = Column(Unicode(255), unique=False)
-    status = Column(Enum(['open', 'closed']), default='open')
+    status = Column(Enum(u'open', u'closed', name='state'), default='open')
 
     def __init__(self, name='', value=''):
         self.name = name
@@ -39,13 +37,37 @@ class Participant(Base):
 
     def __init__(self, name='', email=''):
         self.name = name
-        self.value = value
+        self.email = email
+
+
+class Expense(Base):
+    __tablename__ = 'expense'
+    id = Column(Integer, primary_key=True)
+    date = Column(Date())
+    description = Column(Unicode(255))
+    amount = Column(Float())
+
+
+class Payment(Base):
+    __tablename__ = 'payment'
+    id = Column(Integer, primary_key=True)
+    date = Column(Date())
+    status = Column(Enum(u'open', u'closed', name='state'), default='open')
+    amount = Column(Float())
+
+
+class User(Base):
+    __tablename__ = 'user'
+    id = Column(Integer, primary_key=True)
+    username = Column(Unicode(255))
+    email = Column(Unicode(255))
+    settings = Column(PickleType())
 
 
 def populate():
     session = DBSession()
-    model = Pot(name=u'test name', value=55)
-    session.add(model)
+    pot = Pot(name=u'test name')
+    session.add(pot)
     session.flush()
     transaction.commit()
 
