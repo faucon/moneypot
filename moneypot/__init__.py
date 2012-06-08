@@ -13,6 +13,11 @@ def main(global_config, **settings):
     engine = engine_from_config(settings, 'sqlalchemy.')
     appmaker(engine)
     config = Configurator(settings=settings, session_factory=my_session_factory)
+
+    if settings['debugmail'] == 'true':
+        config.include('pyramid_mailer.testing')
+    else:
+        config.include('pyramid_mailer')
     config.add_static_view('static', 'moneypot:static', cache_max_age=3600)
     config.add_view('moneypot.views.view_home',
                     name="",

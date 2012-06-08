@@ -127,9 +127,10 @@ class User(Base):
 
 def populate():
     session = DBSession()
-    pot = Pot(name=u'test name')
-    session.add(pot)
-    pot.participants.append(Participant(email='', name='Max'))
+    if session.query(Pot).count() == 0:
+        pot = Pot(name=u'test name')
+        session.add(pot)
+        pot.participants.append(Participant(email='', name='Max'))
     session.flush()
     transaction.commit()
 

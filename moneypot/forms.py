@@ -4,7 +4,7 @@ from pyramid.renderers import get_renderer
 from fa.bootstrap.views import ModelView as Base
 from fa.bootstrap import fanstatic_resources
 
-from moneypot.models import Expense
+from moneypot.models import Expense, Participant
 
 
 class FieldSet(forms.FieldSet):
@@ -38,3 +38,13 @@ def expense_form(DBSession, pot, data=None):
             options=[expense_fs.participant.dropdown(options=pot.participants)],
             include=[expense_fs.participant, expense_fs.date, expense_fs.description, expense_fs.amount])
     return expense_fs
+
+
+def invite_form(DBSession, data=None):
+    '''
+    create Form to invite new participant
+    '''
+    invite_fs = FieldSet(Participant, session=DBSession, data=data)
+    invite_fs.configure(
+            include=[invite_fs.name, invite_fs.email])
+    return invite_fs

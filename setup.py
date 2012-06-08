@@ -14,15 +14,16 @@ requires = [
     'sqlalchemy',
     'zope.sqlalchemy',
     'fa.bootstrap',
+    'pyramid_mailer',
     ]
 
-if sys.version_info[:3] < (2,5,0):
+if sys.version_info[:3] < (2, 5, 0):
     requires.append('pysqlite')
 
 setup(name='moneypot',
       version='0.0',
       description='moneypot',
-      long_description=README + '\n\n' +  CHANGES,
+      long_description=README + '\n\n' + CHANGES,
       classifiers=[
         "Programming Language :: Python",
         "Framework :: Pylons",
@@ -36,8 +37,8 @@ setup(name='moneypot',
       packages=find_packages(),
       include_package_data=True,
       zip_safe=False,
-      install_requires = requires,
-      tests_require = requires,
+      install_requires=requires,
+      tests_require=requires,
       test_suite="moneypot",
       entry_points = """\
       [paste.app_factory]
@@ -45,4 +46,3 @@ setup(name='moneypot',
       """,
       paster_plugins=['pyramid'],
       )
-
