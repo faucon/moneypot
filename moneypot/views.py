@@ -2,14 +2,16 @@ from pyramid.view import view_config
 from pyramid.renderers import get_renderer
 from fa.bootstrap import fanstatic_resources
 from js.bootstrap import bootstrap_responsive_css
-from formalchemy import FieldSet
+
+import logging
+log = logging.getLogger(__name__)
 
 from moneypot.models import DBSession
-from moneypot.models import (Pot,
+from moneypot.models import (
         Participant,
-        Expense,
-        User,
-        Payment)
+        Expense,)
+from moneypot.forms import (
+        expense_form,)
 from moneypot.utils import dummy_translate as _
 
 
@@ -24,17 +26,17 @@ def pot_view(context, request):
     bootstrap_responsive_css.need()
     identifier = request.matchdict['identifier']
     participant = DBSession.query(Participant).filter_by(identifier=identifier).one()
-    fs = FieldSet(Expense, session=DBSession)
-    fs.configure(options=[fs.participant.dropdown(options=participant.pot.participants)],
-            include=[fs.participant, fs.date, fs.description, fs.amount])
+    fs = expense_form(DBSession, participant.pot)
     if 'submit' in request.POST:
+        log.debug('Try to save a new expense, called from participant {0} {1}'.format(participant, identifier))
         ex = Expense()
-        fs = FieldSet(ex, session=DBSession, data=request.POST)
-        try:
-            fs.validate()
+        fs = fs.bind(ex)
+        fs.data = request.POST
+        if fs.validate():
             fs.sync()
             participant.expenses.append(ex)
             request.session.flash(_(u'The expense was added'))
-        except:
+        else:
             pass
+            #do nothing and return form with error messages
     return {'form': fs, 'participant': participant, 'pot': participant.pot}

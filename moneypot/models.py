@@ -12,6 +12,10 @@ from sqlalchemy import (ForeignKey,
         Integer, Unicode, Enum, Float, Date, PickleType)
 
 from formalchemy import Column
+from formalchemy.validators import (
+        required,
+        email,
+        )
 
 from zope.sqlalchemy import ZopeTransactionExtension
 
@@ -29,8 +33,8 @@ class Pot(Base):
     '''
     __tablename__ = 'pot'
     id = Column(Integer, primary_key=True)
-    name = Column(Unicode(255), unique=False, label=_(u'name'))
-    status = Column(Enum(u'open', u'closed', name='state'), default='open')
+    name = Column(Unicode(255), unique=False, label=_(u'name'), nullable=False, validate=required)
+    status = Column(Enum(u'open', u'closed', name='state'), default='open', nullable=False, validate=required)
     participants = relationship('Participant', backref='pot', lazy='immediate')
 
     def __init__(self, name=''):
@@ -49,14 +53,18 @@ class Pot(Base):
         '''sum of all participants share factors'''
         return sum([p.share_factor for p in self.participants])
 
+    def expenses_sorted_by_date(self):
+        '''all expenses in this pot, sorted ascending by date'''
+        return DBSession.query(Expense).order_by('date').join(Participant).join(Pot).filter_by(id=self.id).all()
+
 
 class Participant(Base):
     __tablename__ = 'participant'
     id = Column(Integer, primary_key=True)
-    name = Column(Unicode(255), unique=False)
-    email = Column(Unicode(255), nullable=True)
-    identifier = Column(Unicode(255), nullable=True)
-    share_factor = Column(Float(), default=1.0)
+    name = Column(Unicode(255), unique=False, nullable=False, validate=required)
+    email = Column(Unicode(255), nullable=True, validate=email)
+    identifier = Column(Unicode(255), nullable=False, unique=True)
+    share_factor = Column(Float(), default=1.0, nullable=False)
     pot_id = Column(Integer(), ForeignKey('pot.id'))
     expenses = relationship('Expense', backref='participant', lazy='immediate')
 
@@ -85,9 +93,9 @@ class Participant(Base):
 class Expense(Base):
     __tablename__ = 'expense'
     id = Column(Integer, primary_key=True)
-    date = Column(Date())
-    description = Column(Unicode(255))
-    amount = Column(Float())
+    date = Column(Date(), nullable=False, validate=required)
+    description = Column(Unicode(255), nullable=False, validate=required)
+    amount = Column(Float(), nullable=False, validate=required)
     participant_id = Column(Integer(), ForeignKey('participant.id'))
 
     def __init__(self, date=None, description='', amount=''):
