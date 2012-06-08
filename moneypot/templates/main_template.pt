@@ -3,15 +3,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xml:lang="en" xmlns:tal="http://xml.zope.org/namespaces/tal">
 <head>
-  <title>fa.bootstrap</title>
+  <title metal:define-slot='title'>fa.bootstrap</title>
   <meta charset="utf-8"/>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script type="text/javascript" metal:define-slot="javascript"></script>
   <link metal:define-slot="css"></link>
-  <style>body {padding-top:60px}</style>
 </head>
 <body>
 
+  <div class="container">
   <div class="topbar">
       <div class="topbar-inner">
         <div class="container-fluid" data-dropdown="dropdown">
@@ -36,24 +37,15 @@
         </div>
       </div>
     </div>
-    <div class="container-fluid">
-      <div class="sidebar">
-        <div class="well">
-          <metal:main metal:define-slot="sidebar">
-            <h5>Sidebar</h5>
-            <ul>
-              <li><a href="#">Link</a></li>
-            </ul>
-          </metal:main>
-        </div>
-      </div>
       <div class="content">
+        <div class="row" metal:define-slot="messages">
+            <div class="span12" tal:repeat="flashmessage request.session.pop_flash()">
+                <div class="well" tal:content="structure: flashmessage"></div>
+            </div>
+        </div>
           <metal:main metal:define-slot="body"/>
-          <footer>
-             <p>&copy; Your company 2011</p>
-          </footer>
       </div>
-    </div> <!-- /container -->
+  <div class="container">
 </body>
 </html>
 </metal:main>

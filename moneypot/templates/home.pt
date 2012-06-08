@@ -1,6 +1,6 @@
 <metal:main_template use-macro="main_template">
+<title metal:fill-slot="title">The Pyramid Web Application Development Framework</title>
 <head metal:fill-slot="css">
-  <title>The Pyramid Web Application Development Framework</title>
   <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
   <meta name="keywords" content="python web application" />
   <meta name="description" content="pyramid web application" />

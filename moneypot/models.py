@@ -8,11 +8,16 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import relationship
 
-from sqlalchemy import (Column, ForeignKey,
+from sqlalchemy import (ForeignKey,
         Integer, Unicode, Enum, Float, Date, PickleType)
 
+from formalchemy import Column
 
 from zope.sqlalchemy import ZopeTransactionExtension
+
+from moneypot.utils import create_identifier
+from moneypot.utils import dummy_translate as _
+
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
@@ -24,9 +29,9 @@ class Pot(Base):
     '''
     __tablename__ = 'pot'
     id = Column(Integer, primary_key=True)
-    name = Column(Unicode(255), unique=False)
+    name = Column(Unicode(255), unique=False, label=_(u'name'))
     status = Column(Enum(u'open', u'closed', name='state'), default='open')
-    participants = relationship('Participant', backref='pot')
+    participants = relationship('Participant', backref='pot', lazy='immediate')
 
     def __init__(self, name=''):
         '''
@@ -39,6 +44,11 @@ class Pot(Base):
         '''returns the overall sum of expenses in this pot'''
         return sum([p.sum for p in self.participants])
 
+    @property
+    def share_factor_sum(self):
+        '''sum of all participants share factors'''
+        return sum([p.share_factor for p in self.participants])
+
 
 class Participant(Base):
     __tablename__ = 'participant'
@@ -46,12 +56,17 @@ class Participant(Base):
     name = Column(Unicode(255), unique=False)
     email = Column(Unicode(255), nullable=True)
     identifier = Column(Unicode(255), nullable=True)
+    share_factor = Column(Float(), default=1.0)
     pot_id = Column(Integer(), ForeignKey('pot.id'))
-    expenses = relationship('Expense', backref='participant')
+    expenses = relationship('Expense', backref='participant', lazy='immediate')
 
-    def __init__(self, name='', email=''):
+    def __init__(self, name=u'', email=u''):
         self.name = name
         self.email = email
+        self.identifier = create_identifier(name)
+
+    def __unicode__(self):
+        return "{0} ({1})".format(self.name, self.email)
 
     def add_expense(self, date, description, amount):
         self.expenses.append(Expense(date, description, amount))
@@ -60,6 +75,11 @@ class Participant(Base):
     def sum(self):
         '''returns the sum of all expenses of this participant'''
         return sum([e.amount for e in self.expenses])
+
+    @property
+    def result(self):
+        '''the amount of money this participant has to get (positive number) or to pay (negative number)'''
+        return self.sum - self.share_factor / self.pot.share_factor_sum * self.pot.sum
 
 
 class Expense(Base):
@@ -70,7 +90,7 @@ class Expense(Base):
     amount = Column(Float())
     participant_id = Column(Integer(), ForeignKey('participant.id'))
 
-    def __init__(self, date, description, amount):
+    def __init__(self, date=None, description='', amount=''):
         self.date = date
         self.description = description
         self.amount = amount
@@ -101,6 +121,7 @@ def populate():
     session = DBSession()
     pot = Pot(name=u'test name')
     session.add(pot)
+    pot.participants.append(Participant(email='', name='Max'))
     session.flush()
     transaction.commit()
 

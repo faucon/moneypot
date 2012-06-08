@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    tal:define="master load: ./main_template.pt" metal:use-macro="master.macros['master']" >
+    <title metal:fill-slot="title">
+        Moneypot ${pot.name}
+    </title>
+ 
+    <div metal:fill-slot="body">
+        <div class="row">
+            <div class="span6">
+                <h1>${pot.name}</h1>
+                <h3>Du besuchst diesen Topf als ${participant.name}</h3>
+                <h4>Insgesamt wurden ${"%.2f" % pot.sum} &euro; ausgegeben.</h4>
+            </div>
+            <div class="span6">
+                <br />
+                <a class="btn" href="${request.route_url('invite_participant', identifier=participant.identifier)}"> <i class="icon-user"></i> Neuen Teilnehmer Einladen </a>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="span12">
+                <h2>Übersicht</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="span6">
+                <div class="row">
+                    <div class="span6">
+                        <h3>in Text</h3>
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Person</th>
+                                    <th>hat ausgegeben</th>
+                                    <th>Faktor</th>
+                                    <th>Bilanz</th>
+                                    <th>Aktionen</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr tal:repeat="person pot.participants">
+                                    <td tal:content="person.name">Name</td>
+                                    <td tal:content="person.sum">Ausgaben</td>
+                                    <td tal:content="person.share_factor">Ausgaben</td>
+                                    <td tal:content="'%.2f' %person.result">Name</td>
+                                    <td> 
+                                        <a href="${request.route_url('remove_participant', identifier=participant.identifier, identifier_to_remove=person.identifier)}" 
+                                            class="btn" title="Teilnehmer entfernen"><i class="icon-remove" alt="Teilnehmer entfernen"></i></a> 
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+            <div class="span6">
+                <h3>in Bildern</h3>
+                    <ul class="tabs nav nav-tabs">
+                        <li class="active"><a href="#overview" data-toggle="tab">Summe</a></li>
+                        <li><a href="#balance" data-toggle="tab">Bilanz</a></li>
+                    </ul>
+                         
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="overview">
+                        </div>
+                        <div class="tab-pane" id="balance">
+                        </div>
+                    </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="span12">
+                <h4>Ausgabe hinzufügen</h4>
+                <form class="form-horizontal" action=".">
+                ${structure: form.render()}
+                <div class="form-actions">
+                    <button type="submit" value="submit" class="btn btn-primary">Add</button>
+                </div>
+                </form>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="span12" tal:condition="exists: pot.all_expenses">
+            <h2>Detaillierte Ausgabenliste</h2>
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Datum</th>
+                            <th>Person</th>
+                            <th>Beschreibung</th>
+                            <th>Ausgabe</th>
+                            <th>Aktion</th>
+                        </tr> 
+                    </thead>
+                    <tbody>
+                        <!--
+                        <tr tal:repeat="expense view.mypot.expenses_sorted_by_date()">
+                            <td tal:content="expense['date'].strftime('%d.%m.%y')">1.1.2012</td>
+                            <td tal:content="view.mypot.get_user(expense['identifier'])['name']">Username</td>
+                            <td tal:content="expense['description']">description</td>
+                            <td><span tal:content="expense['expense']">10,00</span> €</td>
+                            <td>
+                                <a tal:condition="view.user['identifier'] == expense['identifier']" 
+                                    href="${request.route_url('remove_expense', identifier=view.user['identifier'], id_to_remove=expense['id'])}" 
+                                    class="btn" title="Ausgabe entfernen"><i class="icon-remove" alt="Ausgabe entfernen"></i></a> 
+                            </td>
+                        </tr>
+                        -->
+                    </tbody>
+                </table>
+                <a class="btn" href="${request.route_url('expenses_download', identifier=participant.identifier)}"> <i class="icon-download"></i> Download als csv </a>
+            </div>
+
+        </div>
+        <br />
+    </div>
+</html>

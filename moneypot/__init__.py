@@ -28,4 +28,5 @@ def main(global_config, **settings):
                              session_factory=models.DBSession,
                              view="moneypot.forms.ModelView")
 
+    config.scan()
     return config.make_wsgi_app()
