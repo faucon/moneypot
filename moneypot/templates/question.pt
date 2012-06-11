@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" xmlns:tal="http://xml.zope.org/namespaces/tal"
-xmlns:metal="http://xml.zope.org/namespaces/metal"
-tal:define="master load: ./main_template.pt" metal:use-macro="master.macros['master']" >
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    tal:define="master load: ./main_template.pt" metal:use-macro="master.macros['master']" >
 
-<title metal:fill-slot="title">
-    Moneypot ${pot.name} - Neuen Teilnehmer einladen
-</title>
-
+    <title metal:fill-slot="title">
+      Moneypot ${pot.name} - Sicherheitsabfrage
+    </title>
+ 
 <div metal:fill-slot="body">
     <div class="row">
         <div class="span12">
@@ -16,14 +16,15 @@ tal:define="master load: ./main_template.pt" metal:use-macro="master.macros['mas
     <br />
     <div class="row">
         <div class="span6">
-            <h4>Neuen Benutzer einladen</h4>
+          <h4>${question['title']}</h4>
+          ${question['message']}
             <form class="form-horizontal" action="." method="post">
                 ${structure: form.render()}
                 <div class="form-actions">
-                    <button type="submit" name="submit" value="submit" class="btn btn-primary">Invite</button>
+                    <button type="submit" name="submit" value="submit" class="btn btn-primary">Yes</button>
+                    <button type="submit" name="abort" value="abort" class="btn">No</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
-</html>

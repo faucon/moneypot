@@ -93,3 +93,16 @@ class PotView(object):
                 pass
                 #do nothing and return form with error messages
         return {'form': fs, 'participant': self.participant, 'pot': self.pot}
+
+    @view_config(route_name='remove_expense')
+    def remove_expense(self):
+        '''
+        This view removes an expense
+        '''
+        if self.pot is None:
+            return HTTPNotFound(_('Hier ist kein Topf'))
+        id_to_remove = self.request.matchdict['id_to_remove']
+        expense = DBSession.query(Expense).get(id_to_remove)
+        DBSession.delete(expense)
+        self.request.session.flash(_(u'Die Ausgabe wurde entfernt'))
+        return HTTPFound(location=self.request.route_url('pot', identifier=self.participant.identifier))

@@ -77,10 +77,10 @@
                 <h4>Ausgabe hinzufügen</h4>
                 <form class="form-horizontal" action="." method="post">
                 ${structure: form.render()}
-                <div class="form-actions">
-                    <button type="submit" name="submit" value="submit" class="btn btn-primary">Add</button>
-                </div>
-                </form>
+            <div class="form-actions">
+                <button type="submit" name="submit" value="submit" class="btn btn-primary">Add</button>
+            </div>
+            </form>
             </div>
         </div>
         <br />
@@ -104,7 +104,7 @@
                             <td tal:content="expense.description">description</td>
                             <td><span tal:content="expense.amount">10,00</span> €</td>
                             <td>
-                                <a tal:condition="participant == expense.participant"
+                                <a 
                                     href="${request.route_url('remove_expense', identifier=participant.identifier, id_to_remove=expense.id)}" 
                                     class="btn" title="Ausgabe entfernen"><i class="icon-remove" alt="Ausgabe entfernen"></i></a> 
                             </td>
