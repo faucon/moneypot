@@ -19,7 +19,7 @@ from formalchemy.validators import (
 
 from zope.sqlalchemy import ZopeTransactionExtension
 
-from moneypot.utils import create_identifier
+from moneypot.utils import create_identifier, hash_password
 from moneypot.utils import dummy_translate as _
 
 
@@ -72,6 +72,7 @@ class Participant(Base):
         self.name = name
         self.email = email
         self.identifier = create_identifier(name)
+        self.share_factor = 1
 
     def __unicode__(self):
         return "{0} ({1})".format(self.name, self.email)
@@ -123,6 +124,27 @@ class User(Base):
     username = Column(Unicode(255))
     email = Column(Unicode(255))
     settings = Column(PickleType())
+    password = Column(Unicode(255))
+
+    def __init__(self, username, email, password):
+        self.username = username
+        self.email = email
+        self.set_password(password)
+
+    def __unicode__(self):
+        return self.username
+
+    def set_password(self, clear_passwd):
+        '''
+        set the password property, by hashing it with the utils.hash_password function
+        '''
+        self.password = hash_password(clear_passwd)
+
+    def check_password(self, clear_passwd):
+        '''
+        check if the given password equals the stored one
+        '''
+        return self.password == hash_password(clear_passwd)
 
 
 def populate():

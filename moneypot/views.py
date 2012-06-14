@@ -1,6 +1,7 @@
-from pyramid.view import view_config
+from pyramid.view import view_config, forbidden_view_config
 from pyramid.renderers import get_renderer
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
+from pyramid.security import forget, remember, authenticated_userid
 from fa.bootstrap import fanstatic_resources
 from js.bootstrap import bootstrap_responsive_css
 
@@ -10,7 +11,9 @@ log = logging.getLogger(__name__)
 from moneypot.models import DBSession
 from moneypot.models import (
         Participant,
-        Expense,)
+        Expense,
+        User)
+
 from moneypot.forms import (
         expense_form,
         invite_form)
@@ -106,3 +109,50 @@ class PotView(object):
         DBSession.delete(expense)
         self.request.session.flash(_(u'Die Ausgabe wurde entfernt'))
         return HTTPFound(location=self.request.route_url('pot', identifier=self.participant.identifier))
+
+
+@view_config(route_name='login', renderer='templates/login.pt')
+@forbidden_view_config(renderer='templates/login.pt')
+def login(request):
+    login_url = request.route_url('login')
+    referrer = request.url
+    if referrer == login_url:
+        referrer = '/'  # never use the login form itself as came_from
+    came_from = request.params.get('came_from', referrer)
+    login = ''
+    password = ''
+    if 'submit' in request.params:
+        login = request.params['login']
+        password = request.params['password']
+        user = DBSession.query(User).get(name=login)
+        if user is not None and user.check_password(password):
+            headers = remember(request, login)
+            return HTTPFound(location=came_from,
+                             headers=headers)
+        request.session.flash(_(u'Login failed<br />Please try again'))
+
+    return dict(
+        came_from=came_from,
+        login=login,
+        password=password,
+        )
+
+
+@view_config(route_name='logout')
+def logout(request):
+    headers = forget(request)
+    return HTTPFound(location=request.route_url('home'),
+                     headers=headers)
+
+
+class UserView(object):
+    '''
+    These class contains all views concerning user-centric actions
+    '''
+
+    def __init__(self, request):
+        '''
+        Look for the user document in the database and load it
+        '''
+        self.request = request
+        self.loggedin = authenticated_userid(request)

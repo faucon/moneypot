@@ -1,5 +1,6 @@
 from pyramid.config import Configurator
 from sqlalchemy import engine_from_config
+from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.session import UnencryptedCookieSessionFactoryConfig
 my_session_factory = UnencryptedCookieSessionFactoryConfig('itsaseekreetareally')
 
@@ -18,7 +19,12 @@ def main(global_config, **settings):
         config.include('pyramid_mailer.testing')
     else:
         config.include('pyramid_mailer')
+
+    auth_policy = AuthTktAuthenticationPolicy(secret='thisshouldbesecret')
+    config.set_authentication_policy(auth_policy)
+
     config.add_static_view('static', 'moneypot:static', cache_max_age=3600)
+
     config.add_view('moneypot.views.view_home',
                     name="",
                     renderer="templates/home.pt")
