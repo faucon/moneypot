@@ -153,6 +153,8 @@ def populate():
         pot = Pot(name=u'test name')
         session.add(pot)
         pot.participants.append(Participant(email='', name='Max'))
+        user = User(username='test', email='test@example.org', password='test')
+        session.add(user)
     session.flush()
     transaction.commit()
 

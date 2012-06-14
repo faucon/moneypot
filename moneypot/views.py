@@ -114,6 +114,7 @@ class PotView(object):
 @view_config(route_name='login', renderer='templates/login.pt')
 @forbidden_view_config(renderer='templates/login.pt')
 def login(request):
+    bootstrap_responsive_css.need()
     login_url = request.route_url('login')
     referrer = request.url
     if referrer == login_url:
