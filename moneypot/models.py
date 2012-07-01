@@ -88,7 +88,7 @@ class Participant(Base):
     @property
     def result(self):
         '''the amount of money this participant has to get (positive number) or to pay (negative number)'''
-        return self.sum - self.share_factor / self.pot.share_factor_sum * self.pot.sum
+        return self.sum - self.share_factor / float(self.pot.share_factor_sum) * self.pot.sum   # attention to python divison! always use float!
 
 
 class Expense(Base):
@@ -121,7 +121,7 @@ class Payment(Base):
 class User(Base):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
-    username = Column(Unicode(255))
+    username = Column(Unicode(255), unique=True)
     email = Column(Unicode(255))
     settings = Column(PickleType())
     password = Column(Unicode(255))
@@ -153,10 +153,7 @@ def populate():
         pot = Pot(name=u'test name')
         session.add(pot)
         pot.participants.append(Participant(email='', name='Max'))
-        user = User(username='test', email='test@example.org', password='test')
-        session.add(user)
     session.flush()
-    transaction.commit()
 
 
 def initialize_sql(engine):
