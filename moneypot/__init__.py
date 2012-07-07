@@ -39,10 +39,6 @@ def main(global_config, **settings):
 
     config.add_static_view('static', 'moneypot:static', cache_max_age=3600)
 
-    config.add_view('moneypot.views.view_home',
-                    name="home",
-                    renderer="templates/home.pt")
-
     config.include('pyramid_formalchemy')
     # Adding the jquery libraries
     config.include('fa.bootstrap')

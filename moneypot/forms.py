@@ -1,10 +1,15 @@
 from formalchemy import forms
 from formalchemy import tables
+from formalchemy import fields
+from formalchemy.fields import Field
+from formalchemy import validators
 from pyramid.renderers import get_renderer
 from fa.bootstrap.views import ModelView as Base
 from fa.bootstrap import fanstatic_resources
 
-from moneypot.models import Expense, Participant
+from moneypot.models import Expense, Participant, User
+
+from moneypot.utils import dummy_translate as _
 
 
 class FieldSet(forms.FieldSet):
@@ -28,6 +33,22 @@ class ModelView(Base):
         fanstatic_resources.bootstrap.need()
 
 
+class HomeForm(object):
+    '''form for the home view'''
+
+    potname = Field().label(_(u'Pot name')).required()
+    yourname = Field().label(_(u'Your name')).required()
+    yourmail = Field().label(_(u'Your email')).validate(validators.email)
+
+
+def home_form(data=None):
+    '''
+    create Form for creating a Pot with one participant
+    '''
+    home_fs = FieldSet(HomeForm, data=data)
+    return home_fs
+
+
 def expense_form(DBSession, pot, data=None):
     '''
     create FieldSet for Expense form,
@@ -48,3 +69,25 @@ def invite_form(DBSession, data=None):
     invite_fs.configure(
             include=[invite_fs.name, invite_fs.email])
     return invite_fs
+
+
+def login_form(DBSession, data=None):
+    '''
+    create Form to login user
+    '''
+    login_fs = FieldSet(User, session=DBSession, data=data)
+    login_fs.configure(
+            include=[login_fs.username, login_fs.email])
+    return login_fs
+
+
+def register_form(data=None):
+    '''
+    create Form to register User
+    '''
+    Field = fields.Field
+    register_fs = FieldSet()
+    register_fs.append(Field(name='username'))
+    register_fs.append(Field(name='password').with_renderer(fields.PasswordFieldRenderer))
+    register_fs.append(Field(name='password_confirm').with_renderer(fields.PasswordFieldRenderer))
+    return register_fs

@@ -1,8 +1,6 @@
 from pyramid.view import view_config, forbidden_view_config
-from pyramid.renderers import get_renderer
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 from pyramid.security import forget, remember, authenticated_userid
-from fa.bootstrap import fanstatic_resources
 from js.bootstrap import bootstrap_responsive_css
 
 import logging
@@ -10,21 +8,31 @@ log = logging.getLogger(__name__)
 
 from moneypot.models import DBSession
 from moneypot.models import (
+        Pot,
         Participant,
         Expense,
         User)
 
 from moneypot.forms import (
+        home_form,
         expense_form,
         invite_form)
 from moneypot.utils import dummy_translate as _
 from moneypot import mails
 
 
+@view_config(route_name='home', renderer='templates/home.pt')
 def view_home(context, request):
-    fanstatic_resources.bootstrap.need()
-    main_template = get_renderer('moneypot:templates/main_template.pt').implementation()
-    return {'main_template': main_template, 'project': 'moneypot'}
+    bootstrap_responsive_css.need()    # we need css
+    form = home_form(request.POST or None)
+    if request.POST and form.validate():  # if submitted and and valid, create Pot and participant, and then go to pot site
+        log.debug("gutes Formular!")
+        pot = Pot(form.potname.value)
+        DBSession.add(pot)
+        participant = Participant(name=form.yourname.value, email=form.yourmail.value)
+        pot.participants.append(participant)
+        return HTTPFound(location=request.route_url('pot', identifier=participant.identifier))
+    return {'form': form}
 
 
 class PotView(object):

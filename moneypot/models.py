@@ -148,12 +148,7 @@ class User(Base):
 
 
 def populate():
-    session = DBSession()
-    if session.query(Pot).count() == 0:
-        pot = Pot(name=u'test name')
-        session.add(pot)
-        pot.participants.append(Participant(email='', name='Max'))
-    session.flush()
+    pass
 
 
 def initialize_sql(engine):
