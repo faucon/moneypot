@@ -81,13 +81,26 @@ def login_form(DBSession, data=None):
     return login_fs
 
 
+def passwd_validator(value, field):
+    '''validate that two password fields contain the same password'''
+
+    if field.parent.password.value != value:
+        raise validators.ValidationError(_(u'Password do not match'))
+
+
+class RegisterForm(object):
+    '''form for the register view'''
+
+    username = Field().label(_(u'Username')).required()
+    yourmail = Field().label(_(u'Your email')).required().validate(validators.email)
+    password = Field().label(_(u'Password')).required().password()
+    password_confirm = Field().label(_(u'Password')).required().password().validate(passwd_validator)
+
+
 def register_form(data=None):
     '''
     create Form to register User
     '''
-    Field = fields.Field
-    register_fs = FieldSet()
-    register_fs.append(Field(name='username'))
-    register_fs.append(Field(name='password').with_renderer(fields.PasswordFieldRenderer))
-    register_fs.append(Field(name='password_confirm').with_renderer(fields.PasswordFieldRenderer))
+
+    register_fs = FieldSet(RegisterForm, data=data)
     return register_fs

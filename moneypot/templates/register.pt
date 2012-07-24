@@ -4,25 +4,22 @@ xmlns:metal="http://xml.zope.org/namespaces/metal"
 tal:define="master load: ./main_template.pt" metal:use-macro="master.macros['master']" >
 
 <title metal:fill-slot="title">
-    Moneypot - Login
+    Moneypot - Register
 </title>
 
 <div metal:fill-slot="body">
     <div class="row">
         <div class="span12">
-            <h1>Login</h1>
+            <h1>Register</h1>
         </div>
     </div>
     <br />
     <div class="row">
         <div class="span6">
-            <form action="${request.route_url('login')}" method="post" class="form-horizontal">
-            <input type="hidden" name="came_from" value="${came_from}"/>
-            <input type="text" name="login" value="${login}"/><br/>
-            <input type="password" name="password"
-                    value="${password}"/><br/>
+                <form class="form-horizontal" action="." method="post">
+                ${structure: form.render()}
             <div class="form-actions">
-                <input type="submit" name="submitted" value="Log In" class="btn btn primary"/>
+                <button type="submit" name="submit" value="submit" class="btn btn-primary">Register</button>
             </div>
             </form>
         </div>

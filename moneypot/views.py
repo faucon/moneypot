@@ -1,7 +1,10 @@
 from pyramid.view import view_config, forbidden_view_config
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 from pyramid.security import forget, remember, authenticated_userid
-from js.bootstrap import bootstrap_responsive_css
+from js.bootstrap import bootstrap_responsive_css, bootstrap_js
+from fanstatic import Group
+
+my_bootstrap = Group([bootstrap_responsive_css, bootstrap_js])
 
 import logging
 log = logging.getLogger(__name__)
@@ -23,7 +26,7 @@ from moneypot import mails
 
 @view_config(route_name='home', renderer='templates/home.pt')
 def view_home(context, request):
-    bootstrap_responsive_css.need()    # we need css
+    my_bootstrap.need()    # we need css
     form = home_form(request.POST or None)
     if request.POST and form.validate():  # if submitted and and valid, create Pot and participant, and then go to pot site
         log.debug("gutes Formular!")
@@ -32,7 +35,7 @@ def view_home(context, request):
         participant = Participant(name=form.yourname.value, email=form.yourmail.value)
         pot.participants.append(participant)
         return HTTPFound(location=request.route_url('pot', identifier=participant.identifier))
-    return {'form': form}
+    return {'form': form, 'logged_in': authenticated_userid(request)}
 
 
 class PotView(object):
@@ -130,10 +133,10 @@ def login(request):
     came_from = request.params.get('came_from', referrer)
     login = ''
     password = ''
-    if 'submit' in request.params:
+    if 'submitted' in request.params:
         login = request.params['login']
         password = request.params['password']
-        user = DBSession.query(User).get(name=login)
+        user = DBSession.query(User).filter_by(username=login).first()  # returns user or None
         if user is not None and user.check_password(password):
             headers = remember(request, login)
             return HTTPFound(location=came_from,
@@ -143,6 +146,7 @@ def login(request):
     return dict(
         came_from=came_from,
         login=login,
+        logged_in=authenticated_userid(request),
         password=password,
         )
 
