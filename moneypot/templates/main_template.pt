@@ -11,6 +11,9 @@
   <link metal:define-slot="css"></link>
 </head>
 <body style="padding-top: 90px">
+<div tal:condition="exists: view.logged_in"> 
+    <span tal:define="global logged_in view.logged_in"></span>
+</div>
 
   <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
@@ -31,12 +34,10 @@
                 <ul class="dropdown-menu">
                     <li><a href="${request.application_url}/admin">management</a></li>
                 </ul>
-            </li>
-            <li tal:condition="logged_in">
-                <a href="${request.route_url('logout')}">Logout</a>
-            </li>
-            <li tal:condition="not logged_in">
-                <a href="${request.route_url('login')}">Login</a>
+            </li> 
+            <li tal:condition="exists: logged_in">
+                <a tal:condition="logged_in" href="${request.route_url('logout')}">Logout</a>
+                <a tal:condition="not logged_in" href="${request.route_url('login')}">Login</a>
             </li>
           </ul>
         </div>

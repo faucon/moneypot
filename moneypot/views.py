@@ -55,6 +55,7 @@ class PotView(object):
         self.request = request
         bootstrap_responsive_css.need()
         identifier = request.matchdict['identifier']
+        self.logged_in = authenticated_userid(self.request)
         self.participant = DBSession.query(Participant).filter_by(identifier=identifier).one()
         if self.participant is None:
             return
