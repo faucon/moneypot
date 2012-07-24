@@ -2,6 +2,7 @@
 import unittest
 
 from pyramid import testing
+from zope.testbrowser.wsgi import Browser
 
 import transaction
 
@@ -120,3 +121,34 @@ class TestUser(unittest.TestCase):
         loaded_test_user = self.session.query(User).filter_by(username='test').one()
         self.assertNotEqual(loaded_test_user.password, 'test')  # the password should not be stored in clear text but hashed
         self.assertTrue(loaded_test_user.check_password(u'test'))  # the password can be checked, and works also with unicode
+
+
+class FunctionalTest(unittest.TestCase):
+    '''
+    Test the web interface:
+        * create a pot
+        * add expense
+        * invite user
+        * invited user adds expense
+    test: correct result is shown
+    '''
+
+    SITE = 'http://localhost/'
+
+    def setUp(self):
+        from moneypot import main
+        self.browser = Browser(wsgi_app=main({},
+            **{'sqlalchemy.url': "sqlite://",
+                'debugmail': 'true',
+                'mail.default_sender': 'moneypot@trescher.fr',
+                }))
+
+    def test_story(self):
+        self.browser.open(self.SITE)
+        #Create Pot
+        potinput = self.browser.getControl(name="HomeForm--potname")
+        nameinput = self.browser.getControl(name="HomeForm--yourname")
+        nameinput.value = "Alice"
+        potinput.value = "My New Cool Pot"
+        submit = self.browser.getControl(name='submit')
+        submit.click()

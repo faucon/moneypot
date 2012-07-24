@@ -4,7 +4,7 @@ import sys
 from setuptools import setup, find_packages
 
 here = os.path.abspath(os.path.dirname(__file__))
-README = open(os.path.join(here, 'README.txt')).read()
+README = open(os.path.join(here, 'README.rst')).read()
 CHANGES = open(os.path.join(here, 'CHANGES.txt')).read()
 
 requires = [
@@ -15,7 +15,14 @@ requires = [
     'zope.sqlalchemy',
     'fa.bootstrap',
     'pyramid_mailer',
+    'zope.testbrowser',
+    'webtest'
     ]
+
+test_requires = [
+        'zope.testbrowser',
+        'webtest'
+        ]
 
 if sys.version_info[:3] < (2, 5, 0):
     requires.append('pysqlite')
@@ -38,9 +45,9 @@ setup(name='moneypot',
       include_package_data=True,
       zip_safe=False,
       install_requires=requires,
-      tests_require=requires,
+      tests_require=test_requires,
       test_suite="moneypot",
-      entry_points = """\
+      entry_points="""\
       [paste.app_factory]
       main = moneypot:main
       """,
