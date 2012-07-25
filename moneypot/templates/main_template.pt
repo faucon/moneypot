@@ -10,7 +10,7 @@
   <script type="text/javascript" metal:define-slot="javascript"></script>
   <link metal:define-slot="css"></link>
 </head>
-<body style="padding-top: 90px">
+<body style="padding-top: 60px">
 <div tal:condition="exists: view.logged_in"> 
     <span tal:define="global logged_in view.logged_in"></span>
 </div>
@@ -20,30 +20,24 @@
         <div class="container">
           <a class="brand" href="${request.application_url}">Moneypot</a>
           <ul class="nav">
-            <li><a href="${request.application_url}">New Pot</a></li>
-            <li tal:condition="logged_in">
-                <a href="${request.route_url('overview')}">My Pots</a>
-            </li>
-            <!--!
-            <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">First section</a>
-                <ul class="dropdown-menu">
-                    <li><a href="${request.application_url}/section1">section 1</a></li>
-                    <li><a href="${request.application_url}/section2">section 2</a></li>
-                    <li><a href="${request.application_url}/section3">section 3</a></li>
-                </ul>
+                <li><a href="${request.application_url}"><i class="icon-white icon-star-empty"></i> New Pot</a></li>
+                <li tal:condition="logged_in">
+                    <a href="${request.route_url('overview')}"><i class="icon-white icon-th-list"></i> My Pots</a>
                 </li>
-                -->
+                <metal:define metal:define-slot="main-navbar">
+                </metal:define>
+            </ul>
+            <ul class="nav pull-right">
             <li tal:condition="logged_in" class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-user icon-white"></i>&nbsp;<span tal:replace="logged_in">User</span></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-user icon-white"></i> <span tal:replace="logged_in">User</span></a>
                 <ul class="dropdown-menu">
                     <li>
-                        <a href="${request.route_url('logout')}">Logout</a>
+                    <a href="${request.route_url('logout')}"><i class="icon-off"></i> Logout</a>
                     </li>
                 </ul>
             </li>
             <li tal:condition="not logged_in">
-                <a href="${request.route_url('login')}">Login</a>
+                <a href="${request.route_url('login')}"><i class="icon-white icon-arrow-right"></i> Login</a>
             </li>
           </ul>
         </div>

@@ -71,7 +71,7 @@ class PotView(object):
         Look for the pot document in the database, load is and create pot object and user
         '''
         self.request = request
-        bootstrap_responsive_css.need()
+        my_bootstrap.need()
         identifier = request.matchdict['identifier']
         self.logged_in = authenticated_userid(self.request)
         self.participant = DBSession.query(Participant).filter_by(identifier=identifier).one()
@@ -79,11 +79,15 @@ class PotView(object):
             return
         self.pot = self.participant.pot
 
+        logged_in = authenticated_userid(self.request)
+        if logged_in:
+            self.user = DBSession.query(User).filter_by(username=logged_in).first()
+
     @view_config(route_name='pot', renderer='templates/pot.pt')
     def pot_view(self):
         if self.pot is None:
             return HTTPNotFound(_('Hier ist kein Topf'))
-        fs = expense_form(DBSession, self.participant.pot)
+        fs = expense_form(DBSession, self.participant)
         if 'submit' in self.request.POST:
             log.debug('Try to save a new expense, called from participant {0} {1}'.format(self.participant, self.participant.identifier))
             ex = Expense()
@@ -140,6 +144,20 @@ class PotView(object):
         self.request.session.flash(_(u'Die Ausgabe wurde entfernt'))
         return HTTPFound(location=self.request.route_url('pot', identifier=self.participant.identifier))
 
+    @view_config(route_name='take_ownership')
+    def take_ownership(self):
+        '''
+        add this pot (with given identifier) to the users list of "my pots"
+        '''
+        if self.pot is None:
+            return HTTPNotFound(_('Now pot here'))
+        if self.user:
+            self.participant.user = self.user
+            self.request.session.flash(_(u"The pot was added to 'My Pots'"))
+        else:
+            self.request.session.flash(_(u"Please log in"))
+        return HTTPFound(location=self.request.route_url('pot', identifier=self.participant.identifier))
+
 
 @view_config(route_name='login', renderer='templates/login.pt')
 @forbidden_view_config(renderer='templates/login.pt')
@@ -180,6 +198,8 @@ class UserView(object):
     These class contains all views concerning user-centric actions
     '''
 
+    user = None
+
     def __init__(self, request):
         '''
         Look for the user document in the database and load it
@@ -192,6 +212,6 @@ class UserView(object):
     @view_config(route_name='overview', renderer='templates/overview.pt')
     def overview(self):
         my_bootstrap.need()
-        if self.user is None:
+        if not self.user:
             return HTTPFound(location=self.request.route_url('login'))
         return dict()

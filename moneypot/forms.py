@@ -50,7 +50,7 @@ def home_form(data=None):
     return home_fs
 
 
-def expense_form(DBSession, pot, data=None):
+def expense_form(DBSession, participant, data=None):
     '''
     create FieldSet for Expense form,
     chosing appropriate participants and configure order of fields
@@ -59,10 +59,11 @@ def expense_form(DBSession, pot, data=None):
         tod = datetime.datetime.today()
         data = {'Expense--date__year': str(tod.year),
                 'Expense--date__month': str(tod.month),
-                'Expense--date__day': str(tod.day)}
+                'Expense--date__day': str(tod.day),
+                'Expense--participant_id': participant.id}
     expense_fs = FieldSet(Expense, session=DBSession, data=data)
     expense_fs.configure(
-            options=[expense_fs.participant.dropdown(options=pot.participants)],
+            options=[expense_fs.participant.dropdown(options=participant.pot.participants)],
             include=[expense_fs.participant, expense_fs.date, expense_fs.description, expense_fs.amount])
     return expense_fs
 

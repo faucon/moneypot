@@ -5,6 +5,14 @@
     <title metal:fill-slot="title">
         Moneypot ${pot.name}
     </title>
+
+    <metal:fill metal:fill-slot="main-navbar">
+        <tal:condition tal:condition="python: None == view.participant.user">
+            <li tal:condition="logged_in">
+            <a href="${view.request.route_url('take_ownership', identifier=view.participant.identifier)}"><i class="icon-white icon-plus"></i> Add to 'My Pots'</a>
+            </li>
+        </tal:condition>
+    </metal:fill>
  
     <div metal:fill-slot="body">
         <div class="row">
