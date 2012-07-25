@@ -29,6 +29,9 @@ from moneypot import mails
 @view_config(route_name='home', renderer='templates/home.pt')
 def view_home(context, request):
     my_bootstrap.need()    # we need css
+    logged_in = authenticated_userid(request)
+    if logged_in:
+        user = DBSession.query(User).filter_by(username=logged_in).first()
     form = home_form(request.POST or None)
     if request.POST and form.validate():  # if submitted and and valid, create Pot and participant, and then go to pot site
         log.debug("gutes Formular!")
@@ -36,8 +39,10 @@ def view_home(context, request):
         DBSession.add(pot)
         participant = Participant(name=form.yourname.value, email=form.yourmail.value)
         pot.participants.append(participant)
+        if logged_in:
+            user.participations.append(participant)
         return HTTPFound(location=request.route_url('pot', identifier=participant.identifier))
-    return {'form': form, 'logged_in': authenticated_userid(request)}
+    return {'form': form, 'logged_in': logged_in}
 
 
 @view_config(route_name='register', renderer='templates/register.pt')
@@ -180,4 +185,13 @@ class UserView(object):
         Look for the user document in the database and load it
         '''
         self.request = request
-        self.loggedin = authenticated_userid(request)
+        self.logged_in = authenticated_userid(request)
+        if self.logged_in:
+            self.user = DBSession.query(User).filter_by(username=self.logged_in).first()
+
+    @view_config(route_name='overview', renderer='templates/overview.pt')
+    def overview(self):
+        my_bootstrap.need()
+        if self.user is None:
+            return HTTPFound(location=self.request.route_url('login'))
+        return dict()

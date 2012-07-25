@@ -67,6 +67,7 @@ class Participant(Base):
     share_factor = Column(Float(), default=1.0, nullable=False)
     pot_id = Column(Integer(), ForeignKey('pot.id'))
     expenses = relationship('Expense', backref='participant', lazy='immediate')
+    user_id = Column(Integer(), ForeignKey('user.id'))
 
     def __init__(self, name=u'', email=u''):
         self.name = name
@@ -125,6 +126,7 @@ class User(Base):
     email = Column(Unicode(255))
     settings = Column(PickleType())
     password = Column(Unicode(255))
+    participations = relationship('Participant', backref='user', lazy='immediate')
 
     def __init__(self, username, email, password):
         self.username = username
@@ -146,6 +148,15 @@ class User(Base):
         '''
         return self.password == hash_password(clear_passwd)
 
+    @property
+    def sum(self):
+        '''returns the sum of all participation sums'''
+        return sum([p.sum for p in self.participations])
+
+    @property
+    def result(self):
+        '''the amount of money this user has to get (positive number) or to pay (negative number) in total of all his pots'''
+        return sum([p.result for p in self.participations])
 
 def populate():
     pass

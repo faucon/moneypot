@@ -34,9 +34,16 @@
                 </ul>
                 </li>
                 -->
-            <li tal:condition="exists: logged_in">
-                <a tal:condition="logged_in" href="${request.route_url('logout')}">Logout</a>
-                <a tal:condition="not logged_in" href="${request.route_url('login')}">Login</a>
+            <li tal:condition="logged_in" class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-user icon-white"></i>&nbsp;<span tal:replace="logged_in">User</span></a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="${request.route_url('logout')}">Logout</a>
+                    </li>
+                </ul>
+            </li>
+            <li tal:condition="not logged_in">
+                <a href="${request.route_url('login')}">Login</a>
             </li>
           </ul>
         </div>
