@@ -19,7 +19,8 @@ from moneypot.models import (
 from moneypot.forms import (
         home_form,
         expense_form,
-        invite_form)
+        invite_form,
+        register_form)
 from moneypot.utils import dummy_translate as _
 from moneypot import mails
 
@@ -35,6 +36,17 @@ def view_home(context, request):
         participant = Participant(name=form.yourname.value, email=form.yourmail.value)
         pot.participants.append(participant)
         return HTTPFound(location=request.route_url('pot', identifier=participant.identifier))
+    return {'form': form, 'logged_in': authenticated_userid(request)}
+
+
+@view_config(route_name='register', renderer='templates/register.pt')
+def view_register(context, request):
+    my_bootstrap.need()    # we need css
+    form = register_form(request.POST or None)
+    if request.POST and form.validate():  # if submitted and and valid, create Pot and participant, and then go to pot site
+        user = User(form.username.value, form.yourmail.value, form.password.value)
+        DBSession.add(user)
+        return HTTPFound(location=request.route_url('home'))
     return {'form': form, 'logged_in': authenticated_userid(request)}
 
 
