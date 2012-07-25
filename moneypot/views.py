@@ -20,7 +20,8 @@ from moneypot.forms import (
         home_form,
         expense_form,
         invite_form,
-        register_form)
+        register_form,
+        login_form)
 from moneypot.utils import dummy_translate as _
 from moneypot import mails
 
@@ -144,11 +145,10 @@ def login(request):
     if referrer == login_url:
         referrer = '/'  # never use the login form itself as came_from
     came_from = request.params.get('came_from', referrer)
-    login = ''
-    password = ''
-    if 'submitted' in request.params:
-        login = request.params['login']
-        password = request.params['password']
+    form = login_form(request.POST or None)
+    if request.POST and form.validate():
+        login = form.username.value
+        password = form.password.value
         user = DBSession.query(User).filter_by(username=login).first()  # returns user or None
         if user is not None and user.check_password(password):
             headers = remember(request, login)
@@ -158,9 +158,8 @@ def login(request):
 
     return dict(
         came_from=came_from,
-        login=login,
+        form=form,
         logged_in=authenticated_userid(request),
-        password=password,
         )
 
 

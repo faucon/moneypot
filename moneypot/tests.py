@@ -184,6 +184,32 @@ class FunctionalTest(unittest.TestCase):
         submit = self.browser.getControl(name='submit')
         submit.click()
 
+    def register(self):
+        '''register Alice'''
+        username = self.browser.getControl(name='RegisterForm--username')
+        email = self.browser.getControl(name='RegisterForm--yourmail')
+        password = self.browser.getControl(name='RegisterForm--password')
+        password_confirm = self.browser.getControl(name='RegisterForm--password_confirm')
+
+        username.value = 'alice'
+        email.value = 'alice@example.org'
+        password.value = 'secret'
+        password_confirm.value = 'secret'
+
+        submit = self.browser.getControl(name='submit')
+        submit.click()
+
+    def login(self):
+        '''login Alice'''
+        username = self.browser.getControl(name='LoginForm--username')
+        password = self.browser.getControl(name='LoginForm--password')
+
+        username.value = 'alice'
+        password.value = 'secret'
+
+        submit = self.browser.getControl(name='submit')
+        submit.click()
+
     def test_create_pot(self):
         self.create_pot()
 
@@ -199,3 +225,22 @@ class FunctionalTest(unittest.TestCase):
         soup = BeautifulSoup(self.browser.contents)
         expense_text = soup.find('td', text="42.0")
         self.assertIsNotNone(expense_text)
+
+    def test_register_login_logout(self):
+        '''
+        go to login page, from there follow "register" link.
+        register alice and go back to login page
+        login
+        then try to logout (logout link is only visible if login was successfull)
+        '''
+        self.browser.open(self.SITE)
+        login_link = self.browser.getLink('Login')
+        login_link.click()
+        register_link = self.browser.getLink('Registration')
+        register_link.click()
+        self.register()
+        login_link = self.browser.getLink('Login')
+        login_link.click()
+        self.login()
+        logout_link = self.browser.getLink('Logout')
+        logout_link.click()

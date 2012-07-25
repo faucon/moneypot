@@ -8,7 +8,7 @@ from fa.bootstrap import fanstatic_resources
 
 import datetime
 
-from moneypot.models import Expense, Participant, User
+from moneypot.models import Expense, Participant
 
 from moneypot.utils import dummy_translate as _
 
@@ -77,13 +77,19 @@ def invite_form(DBSession, data=None):
     return invite_fs
 
 
-def login_form(DBSession, data=None):
+class LoginForm(object):
+    '''form for the login view'''
+    username = Field().label(_(u'Username')).required()
+    password = Field().label(_(u'Password')).required().password()
+
+
+def login_form(data=None):
     '''
     create Form to login user
     '''
-    login_fs = FieldSet(User, session=DBSession, data=data)
+    login_fs = FieldSet(LoginForm, data=data)
     login_fs.configure(
-            include=[login_fs.username, login_fs.email])
+            include=[login_fs.username, login_fs.password])
     return login_fs
 
 

@@ -3,6 +3,11 @@
 <title metal:fill-slot="title">Moneypot</title>
 <body metal:fill-slot="body">
     <div class="row">
+        <div class="span12">
+            <h1>New Pot</h1>
+        </div>
+    </div>
+    <div class="row">
         <div class="span6">
             <form class="form-horizontal" action="." method="post">
                 ${structure: form.render()}
