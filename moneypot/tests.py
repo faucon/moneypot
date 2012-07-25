@@ -3,6 +3,7 @@ import unittest
 
 from pyramid import testing
 from zope.testbrowser.wsgi import Browser
+from bs4 import BeautifulSoup
 
 import transaction
 
@@ -143,7 +144,27 @@ class FunctionalTest(unittest.TestCase):
                 'mail.default_sender': 'moneypot@trescher.fr',
                 }))
 
-    def test_story(self):
+    def invite_bob(self, email=''):
+        '''
+        start on pot site
+        invite bob
+        and return link for bob
+        '''
+        link = self.browser.getLink('Einladen')
+        link.click()
+        name = self.browser.getControl(name='Participant--name')
+        mail = self.browser.getControl(name='Participant--email')
+        name.value = 'Bob'
+        mail.value = email
+        submit = self.browser.getControl(name='submit')
+        submit.click()
+
+        #now look for link for bob
+        soup = BeautifulSoup(self.browser.contents)
+        boblink = soup.find('div', 'well').a['href']  # the link is inside the first "well" (where messages are presented)
+        return boblink
+
+    def create_pot(self):
         self.browser.open(self.SITE)
         #Create Pot
         potinput = self.browser.getControl(name="HomeForm--potname")
@@ -152,3 +173,29 @@ class FunctionalTest(unittest.TestCase):
         potinput.value = "My New Cool Pot"
         submit = self.browser.getControl(name='submit')
         submit.click()
+
+    def add_expense(self, amount="42.0"):
+        '''adds an expese'''
+        description = self.browser.getControl(name='Expense--description')
+        expense = self.browser.getControl(name='Expense--amount')
+        description.value = "my very first test expense"
+        expense.value = amount
+
+        submit = self.browser.getControl(name='submit')
+        submit.click()
+
+    def test_create_pot(self):
+        self.create_pot()
+
+    def test_invite_bob(self):
+        self.create_pot()
+        boblink = self.invite_bob()
+        #try to call this site
+        self.browser.open(boblink)
+
+    def test_add_expense(self):
+        self.create_pot()
+        self.add_expense()
+        soup = BeautifulSoup(self.browser.contents)
+        expense_text = soup.find('td', text="42.0")
+        self.assertIsNotNone(expense_text)

@@ -16,7 +16,8 @@ requires = [
     'fa.bootstrap',
     'pyramid_mailer',
     'zope.testbrowser',
-    'webtest'
+    'webtest',
+    'beautifulsoup4',
     ]
 
 test_requires = [

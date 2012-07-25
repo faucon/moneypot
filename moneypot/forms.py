@@ -1,11 +1,12 @@
 from formalchemy import forms
 from formalchemy import tables
-from formalchemy import fields
 from formalchemy.fields import Field
 from formalchemy import validators
 from pyramid.renderers import get_renderer
 from fa.bootstrap.views import ModelView as Base
 from fa.bootstrap import fanstatic_resources
+
+import datetime
 
 from moneypot.models import Expense, Participant, User
 
@@ -54,6 +55,11 @@ def expense_form(DBSession, pot, data=None):
     create FieldSet for Expense form,
     chosing appropriate participants and configure order of fields
     '''
+    if data is None:
+        tod = datetime.datetime.today()
+        data = {'Expense--date__year': str(tod.year),
+                'Expense--date__month': str(tod.month),
+                'Expense--date__day': str(tod.day)}
     expense_fs = FieldSet(Expense, session=DBSession, data=data)
     expense_fs.configure(
             options=[expense_fs.participant.dropdown(options=pot.participants)],
@@ -94,7 +100,7 @@ class RegisterForm(object):
     username = Field().label(_(u'Username')).required()
     yourmail = Field().label(_(u'Your email')).required().validate(validators.email)
     password = Field().label(_(u'Password')).required().password()
-    password_confirm = Field().label(_(u'Password')).required().password().validate(passwd_validator)
+    password_confirm = Field().label(_(u'Confirm password')).required().password().validate(passwd_validator)
 
 
 def register_form(data=None):
@@ -103,4 +109,6 @@ def register_form(data=None):
     '''
 
     register_fs = FieldSet(RegisterForm, data=data)
+    register_fs.configure(
+            include=[register_fs.username, register_fs.yourmail, register_fs.password, register_fs.password_confirm])
     return register_fs
