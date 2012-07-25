@@ -9,6 +9,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script type="text/javascript" metal:define-slot="javascript"></script>
   <link metal:define-slot="css"></link>
+  <style type="text/css">
+    td.number, th.number {
+        text-align: right;
+    }
+  </style>
 </head>
 <body style="padding-top: 60px">
 <div tal:condition="exists: view.logged_in"> 

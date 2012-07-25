@@ -50,9 +50,9 @@
                             <tbody>
                                 <tr tal:repeat="person pot.participants">
                                     <td tal:content="person.name">Name</td>
-                                    <td tal:content="person.sum">Ausgaben</td>
-                                    <td tal:content="person.share_factor">Ausgaben</td>
-                                    <td tal:content="'%.2f' %person.result">Name</td>
+                                    <td class="number" tal:content="'%.2f' %person.sum">Ausgaben</td>
+                                    <td class="number" tal:content="person.share_factor">Ausgaben</td>
+                                    <td class="number" tal:content="'%.2f' %person.result">Name</td>
                                     <td> 
                                         <a href="${request.route_url('remove_participant', identifier=participant.identifier, identifier_to_remove=person.identifier)}" 
                                             class="btn" title="Teilnehmer entfernen"><i class="icon-remove" alt="Teilnehmer entfernen"></i></a> 

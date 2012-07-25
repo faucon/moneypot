@@ -12,10 +12,10 @@
                     <h1>${view.user.username}</h1>
                     <h3>Overview of your pots</h3>
                     <h4 tal:condition="view.user.result < 0">
-                        In total you have to pay <span style="color: #BD362F"><span tal:replace="view.user.result"> </span>€</span>.
+                        In total you have to pay <span style="color: #BD362F">${"%.2f" % view.user.result} &euro;</span>.
                     </h4>
                     <h4 tal:condition="view.user.result >= 0">
-                        In total you will get <span style="color: #51A351"><span tal:replace="view.user.result"> </span>€</span>.
+                        In total you will get <span style="color: #51A351">${"%.2f" % view.user.result} &euro;</span>.
                     </h4>
                 </div>
         </div>
@@ -34,15 +34,15 @@
                     <tbody>
                         <tr tal:repeat="participation view.user.participations">
                             <td tal:content="participation.pot.name">Name</td>
-                            <td tal:content="participation.sum"></td>
-                            <td tal:content="participation.result"></td>
+                            <td class="number" tal:content="'%.2f' %participation.sum"></td>
+                            <td class="number" tal:content="'%.2f' %participation.result"></td>
                             <td><a href="${view.request.route_url('pot', identifier=participation.identifier)}" alt="view pot"><i class="icon-arrow-right"></i></a></td>
                         </tr>
                     </tbody>
                     <thead>
                         <th>Sum</th>
-                        <th tal:content="view.user.sum">Sum</th>
-                        <th tal:content="view.user.result">Balance</th>
+                        <th class="number" tal:content="'%.2f' %view.user.sum">Sum</th>
+                        <th class="number" tal:content="'%.2f' %view.user.result">Balance</th>
                         <th></th>
                     </thead>
                 </table>
