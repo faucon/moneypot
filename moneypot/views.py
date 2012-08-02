@@ -124,6 +124,9 @@ class PotView(object):
                 newurl = self.request.route_url('pot', identifier=invited.identifier)
                 if invited.email:
                     mails.invite_mail(self.request, self.pot, self.participant, invited, newurl)
+                    user = DBSession.query(User).filter_by(email=invited.email).first()
+                    if user is not None:
+                        user.participations.append(invited)
                 self.request.session.flash(_(u'''{0} wurde eingeladen. Wenn du eine Mailadresse
                 angegeben hast, wird ihm der Link per Mail geschickt. Sonst musst du ihm
                 folgenden Link zukommen lassen: <a href={1}>{1}</a>'''.format(invited.name, newurl)))

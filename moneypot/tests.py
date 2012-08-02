@@ -150,7 +150,7 @@ class FunctionalTest(unittest.TestCase):
         invite bob
         and return link for bob
         '''
-        link = self.browser.getLink('Einladen')
+        link = self.browser.getLink('Invite')
         link.click()
         name = self.browser.getControl(name='Participant--name')
         mail = self.browser.getControl(name='Participant--email')
@@ -223,7 +223,7 @@ class FunctionalTest(unittest.TestCase):
         self.create_pot()
         self.add_expense()
         soup = BeautifulSoup(self.browser.contents)
-        expense_text = soup.find('td', text="42.0")
+        expense_text = soup.find('td', text="42.00")
         self.assertIsNotNone(expense_text)
 
     def test_register_login_logout(self):

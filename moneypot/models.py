@@ -158,6 +158,7 @@ class User(Base):
         '''the amount of money this user has to get (positive number) or to pay (negative number) in total of all his pots'''
         return sum([p.result for p in self.participations])
 
+
 def populate():
     pass
 
