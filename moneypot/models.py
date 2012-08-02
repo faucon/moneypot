@@ -27,6 +27,17 @@ DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
 
 
+class Status(object):
+    '''
+    collect all possible status for pots
+    the status will be set per participant
+    '''
+    OPEN = 'open'
+    ARCHIVED = 'archived'
+
+STATUS = Status()
+
+
 class Pot(Base):
     '''
     This class describes a pot of money, it holds some information, and has relationships to participants, which in turn refer to their expenses
@@ -68,6 +79,7 @@ class Participant(Base):
     pot_id = Column(Integer(), ForeignKey('pot.id'))
     expenses = relationship('Expense', backref='participant', lazy='immediate')
     user_id = Column(Integer(), ForeignKey('user.id'))
+    status = Column(Integer(), nullable=True, default=STATUS.OPEN)
 
     def __init__(self, name=u'', email=u''):
         self.name = name
@@ -151,12 +163,22 @@ class User(Base):
     @property
     def sum(self):
         '''returns the sum of all participation sums'''
-        return sum([p.sum for p in self.participations])
+        return sum([p.sum for p in self.participations if p.status == STATUS.OPEN])
 
     @property
     def result(self):
         '''the amount of money this user has to get (positive number) or to pay (negative number) in total of all his pots'''
-        return sum([p.result for p in self.participations])
+        return sum([p.result for p in self.participations if p.status == STATUS.OPEN])
+
+    @property
+    def active_participations(self):
+        '''return all participations with status OPEN'''
+        return [p for p in self.participations if p.status == STATUS.OPEN]
+
+    @property
+    def archived_participations(self):
+        '''return all archived participations of the user'''
+        return [p for p in self.participations if p.status == STATUS.ARCHIVED]
 
 
 def populate():

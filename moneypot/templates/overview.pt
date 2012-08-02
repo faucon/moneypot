@@ -10,7 +10,7 @@
         <div class="row">
                 <div class="span12">
                     <h1>${view.user.username}</h1>
-                    <h3>Overview of your pots</h3>
+                    <h2>Overview of your pots</h2>
                     <h4 tal:condition="view.user.result < 0">
                         In total you have to pay <span style="color: #BD362F">${"%.2f" % view.user.result} &euro;</span>.
                     </h4>
@@ -21,7 +21,8 @@
         </div>
         <br />
         <div class="row">
-            <div class="span6">
+            <div class="span12">
+                <h3> Active Pots </h3>
                 <table class="table table-striped table-bordered">
                     <thead>
                         <tr>
@@ -32,11 +33,14 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr tal:repeat="participation view.user.participations">
+                        <tr tal:repeat="participation view.user.active_participations">
                             <td tal:content="participation.pot.name">Name</td>
                             <td class="number" tal:content="'%.2f' %participation.sum"></td>
                             <td class="number" tal:content="'%.2f' %participation.result"></td>
-                            <td><a href="${view.request.route_url('pot', identifier=participation.identifier)}" alt="view pot"><i class="icon-arrow-right"></i></a></td>
+                            <td>
+                                <a href="${view.request.route_url('pot', identifier=participation.identifier)}" alt="view this pot"><i class="icon-arrow-right"></i></a>
+                                <a href="${view.request.route_url('archive', identifier=participation.identifier)}" alt="archive this pot"><i class="icon-book"></i></a>
+                            </td>
                         </tr>
                     </tbody>
                     <thead>
@@ -45,6 +49,30 @@
                         <th class="number" tal:content="'%.2f' %view.user.result">Balance</th>
                         <th></th>
                     </thead>
+                </table>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="span12">
+                <h3> Archived Pots </h3>
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Pot</th>
+                            <th>you spend</th>
+                            <th>your balance</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr tal:repeat="participation view.user.archived_participations">
+                            <td tal:content="participation.pot.name">Name</td>
+                            <td class="number" tal:content="'%.2f' %participation.sum"></td>
+                            <td class="number" tal:content="'%.2f' %participation.result"></td>
+                            <td><a href="${view.request.route_url('pot', identifier=participation.identifier)}" alt="view pot"><i class="icon-arrow-right"></i></a></td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
         </div>

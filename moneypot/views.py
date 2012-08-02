@@ -14,7 +14,8 @@ from moneypot.models import (
         Pot,
         Participant,
         Expense,
-        User)
+        User,
+        STATUS)
 
 from moneypot.forms import (
         home_form,
@@ -32,7 +33,13 @@ def view_home(context, request):
     logged_in = authenticated_userid(request)
     if logged_in:
         user = DBSession.query(User).filter_by(username=logged_in).first()
-    form = home_form(request.POST or None)
+    if not request.POST and logged_in:
+        data = {'HomeForm--yourmail': user.email,
+                'HomeForm--yourname': user.username
+                }
+    else:
+        data = None
+    form = home_form(request.POST or data)
     if request.POST and form.validate():  # if submitted and and valid, create Pot and participant, and then go to pot site
         log.debug("gutes Formular!")
         pot = Pot(form.potname.value)
@@ -84,11 +91,13 @@ class PotView(object):
         logged_in = authenticated_userid(self.request)
         if logged_in:
             self.user = DBSession.query(User).filter_by(username=logged_in).first()
+        else:
+            self.user = None
 
     @view_config(route_name='pot', renderer='templates/pot.pt')
     def pot_view(self):
         if self.pot is None:
-            return HTTPNotFound(_('Hier ist kein Topf'))
+            return HTTPNotFound(_('Now pot here'))
         fs = expense_form(DBSession, self.participant)
         if 'submit' in self.request.POST:
             log.debug('Try to save a new expense, called from participant {0} {1}'.format(self.participant, self.participant.identifier))
@@ -162,6 +171,21 @@ class PotView(object):
         else:
             self.request.session.flash(_(u"Please log in"))
         return HTTPFound(location=self.request.route_url('pot', identifier=self.participant.identifier))
+
+    @view_config(route_name='archive')
+    def archive(self):
+        '''
+        archive this pot for logged in user,
+        (it will be shown in archived pots on his list, not under active pots - for the overall sum for the user only active pots account)
+        '''
+        #to archive pot, set status in participant object to archived
+        if self.pot is None:
+            return HTTPNotFound(_('Now pot here'))
+        #if not logged in, refer user to login page
+        if self.user is None:
+            return HTTPFound(location=self.request.route_url('login'))
+        self.participant.status = STATUS.ARCHIVED
+        return HTTPFound(location=self.request.route_url('overview'))
 
 
 @view_config(route_name='login', renderer='templates/login.pt')
