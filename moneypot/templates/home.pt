@@ -12,7 +12,7 @@
             <form class="form-horizontal" action="." method="post">
                 ${structure: form.render()}
                 <div class="form-actions">
-                    <button type="submit" name="submit" value="submit" class="btn btn-primary">Add</button>
+                    <button type="submit" name="submit" value="submit" class="btn btn-primary">Create Pot</button>
                 </div>
             </form>
         </div>

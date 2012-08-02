@@ -39,6 +39,8 @@ def view_home(context, request):
         DBSession.add(pot)
         participant = Participant(name=form.yourname.value, email=form.yourmail.value)
         pot.participants.append(participant)
+        if form .yourmail.value:
+            mails.new_pot_mail(request, pot, participant, request.route_url('pot', identifier=participant.identifier))
         if logged_in:
             user.participations.append(participant)
         return HTTPFound(location=request.route_url('pot', identifier=participant.identifier))
