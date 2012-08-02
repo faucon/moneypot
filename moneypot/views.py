@@ -204,6 +204,7 @@ def login(request):
         user = DBSession.query(User).filter_by(username=login).first()  # returns user or None
         if user is not None and user.check_password(password):
             headers = remember(request, login)
+            request.session.flash(_('Succesfully logged in'))
             return HTTPFound(location=came_from,
                              headers=headers)
         request.session.flash(_(u'Login failed<br />Please try again'))
