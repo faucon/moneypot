@@ -2,6 +2,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" xmlns:tal="http://xml.zope.org/namespaces/tal"
     xmlns:metal="http://xml.zope.org/namespaces/metal"
     tal:define="master load: ./main_template.pt" metal:use-macro="master.macros['master']" >
+    <!--!
+    This template displays a personalized overview for logged in users.
+    For now it contains a list of all the users pots.
+    Some of them might be archived, they are shown in a seperate list below.
+    On top a total balance over all active pots is shown
+    -->
     <title metal:fill-slot="title">
         Moneypot Overview for ${view.user.username}
     </title>
@@ -34,11 +40,12 @@
                     </thead>
                     <tbody>
                         <tr tal:repeat="participation view.user.active_participations">
-                            <td tal:content="participation.pot.name">Name</td>
+                            <td><!--! show pot name as direct link to pot site -->
+                                <a href="${view.request.route_url('pot', identifier=participation.identifier)}" alt="view this pot" tal:content="participation.pot.name"></a>
+                            </td>
                             <td class="number" tal:content="'%.2f' %participation.sum"></td>
                             <td class="number" tal:content="'%.2f' %participation.result"></td>
                             <td>
-                                <a href="${view.request.route_url('pot', identifier=participation.identifier)}" alt="view this pot"><i class="icon-arrow-right"></i></a>
                                 <a href="${view.request.route_url('archive', identifier=participation.identifier)}" alt="archive this pot"><i class="icon-book"></i></a>
                             </td>
                         </tr>
@@ -67,10 +74,14 @@
                     </thead>
                     <tbody>
                         <tr tal:repeat="participation view.user.archived_participations">
-                            <td tal:content="participation.pot.name">Name</td>
+                            <td><!--! show pot name as direct link to pot site -->
+                                <a href="${view.request.route_url('pot', identifier=participation.identifier)}" alt="view this pot" tal:content="participation.pot.name"></a>
+                            </td>
                             <td class="number" tal:content="'%.2f' %participation.sum"></td>
                             <td class="number" tal:content="'%.2f' %participation.result"></td>
-                            <td><a href="${view.request.route_url('pot', identifier=participation.identifier)}" alt="view pot"><i class="icon-arrow-right"></i></a></td>
+                            <td>
+                                <!-- TODO: de-archive this pot -->
+                            </td>
                         </tr>
                     </tbody>
                 </table>
