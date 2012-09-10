@@ -46,7 +46,11 @@
                             <td class="number" tal:content="'%.2f' %participation.sum"></td>
                             <td class="number" tal:content="'%.2f' %participation.result"></td>
                             <td>
-                                <a href="${view.request.route_url('archive', identifier=participation.identifier)}" alt="archive this pot"><i class="icon-book"></i></a>
+                                
+                                <a href="${view.request.route_url('archive', identifier=participation.identifier)}" alt="archive this pot"
+                                    rel="tooltip" title="archive this pot" >
+                                    <i class="icon-book"></i>
+                                </a>
                             </td>
                         </tr>
                     </tbody>

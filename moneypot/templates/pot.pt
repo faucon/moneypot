@@ -63,7 +63,7 @@
                                     <td> 
                                         <!--! button to remove this participant from the pot -->
                                         <a href="${request.route_url('remove_participant', identifier=participant.identifier, identifier_to_remove=person.identifier)}" 
-                                            class="btn" title="Teilnehmer entfernen"><i class="icon-remove" alt="Teilnehmer entfernen"></i></a> 
+                                            class="btn" title="remove participant" rel="tooltip"><i class="icon-remove" alt="remove participant"></i></a> 
                                     </td>
                                 </tr>
                             </tbody>

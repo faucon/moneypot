@@ -58,6 +58,9 @@
           <metal:main metal:define-slot="body"/>
       </div>
   </div>
+    <script type="text/javascript">
+        $("[rel=tooltip]").tooltip();
+    </script>
 </body>
 </html>
 </metal:main>
