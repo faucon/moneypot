@@ -109,6 +109,7 @@ class PotView(object):
                 expensing_participant = DBSession.query(Participant).get(ex.participant_id)
                 expensing_participant.expenses.append(ex)
                 self.request.session.flash(_(u'The expense was added'))
+                return HTTPFound(location=self.request.route_url('pot', identifier=self.participant.identifier))
             else:
                 pass
                 #do nothing and return form with error messages
