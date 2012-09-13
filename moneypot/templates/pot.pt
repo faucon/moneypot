@@ -2,28 +2,35 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" xmlns:tal="http://xml.zope.org/namespaces/tal"
     xmlns:metal="http://xml.zope.org/namespaces/metal"
     tal:define="master load: ./main_template.pt" metal:use-macro="master.macros['master']" >
+    <!--!  
+    Use the main macro, and set title to the pots name
+    -->
     <title metal:fill-slot="title">
         Moneypot ${pot.name}
     </title>
 
     <metal:fill metal:fill-slot="main-navbar">
+    <!--!
+    Add an action to the main menu:
+    if this pot is not yet in the "My Pots" list of the currently logged in user
+    show him an icon to add this pot to the "my Pots" list.
+        -->
         <tal:condition tal:condition="python: None == view.participant.user">
             <li tal:condition="logged_in">
-            <a href="${view.request.route_url('take_ownership', identifier=view.participant.identifier)}"><i class="icon-white icon-plus"></i> Add to 'My Pots'</a>
+            <a href="${view.request.route_url('take_ownership', identifier=view.participant.identifier)}"><i class="icon icon-plus"></i> Add to 'My Pots'</a>
             </li>
         </tal:condition>
     </metal:fill>
  
     <div metal:fill-slot="body">
+        <!--!
+        The main pot view, show first some general informations about name and total sum
+        -->
         <div class="row">
-            <div class="span6">
+            <div class="span12">
                 <h1>${pot.name}</h1>
                 <h3>You are visiting this pot as ${participant.name}</h3>
                 <h4>In total ${"%.2f" % pot.sum} &euro; were spend.</h4>
-            </div>
-            <div class="span6">
-                <br />
-                <a class="btn" href="${request.route_url('invite_participant', identifier=participant.identifier)}"> <i class="icon-user"></i> Invite new Participant </a>
             </div>
         </div>
         <br />
@@ -32,6 +39,7 @@
                 <h2>Overview</h2>
             </div>
         </div>
+        <!--! per-user overview: who has spend how much, and how much does he have to pay? -->
         <div class="row">
             <div class="span6">
                 <div class="row">
@@ -40,10 +48,10 @@
                             <thead>
                                 <tr>
                                     <th>Person</th>
-                                    <th>hat ausgegeben</th>
-                                    <th>Faktor</th>
-                                    <th>Bilanz</th>
-                                    <th>Aktionen</th>
+                                    <th>spend</th>
+                                    <th>factor</th>
+                                    <th>balance</th>
+                                    <th>actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -53,17 +61,22 @@
                                     <td class="number" tal:content="person.share_factor">Ausgaben</td>
                                     <td class="number" tal:content="'%.2f' %person.result">Name</td>
                                     <td> 
+                                        <!--! button to remove this participant from the pot -->
                                         <a href="${request.route_url('remove_participant', identifier=participant.identifier, identifier_to_remove=person.identifier)}" 
-                                            class="btn" title="Teilnehmer entfernen"><i class="icon-remove" alt="Teilnehmer entfernen"></i></a> 
+                                            class="btn" title="remove participant" rel="tooltip"><i class="icon-remove" alt="remove participant"></i></a> 
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
+                <br />
+                <!--! Button to invite new participants to this pot-->
+                <a class="btn" href="${request.route_url('invite_participant', identifier=participant.identifier)}"> <i class="icon-user"></i> Invite new Participant </a>
                     </div>
                 </div>
 
             </div>
             <div class="span6">
+                <!--! Form for adding a new expense -->
                 <h4>Add Expense</h4>
                 <form class="form-horizontal" action="." method="post">
                 ${structure: form.render()}
@@ -95,6 +108,7 @@
                             <td tal:content="expense.description">description</td>
                             <td><span tal:content="expense.amount">10,00</span> €</td>
                             <td>
+                                <!--! button to remove a single expense -->
                                 <a 
                                     href="${request.route_url('remove_expense', identifier=participant.identifier, id_to_remove=expense.id)}" 
                                     class="btn" title="Ausgabe entfernen"><i class="icon-remove" alt="Ausgabe entfernen"></i></a> 

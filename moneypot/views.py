@@ -58,10 +58,14 @@ def view_home(context, request):
 def view_register(context, request):
     my_bootstrap.need()    # we need css
     form = register_form(request.POST or None)
-    if request.POST and form.validate():  # if submitted and and valid, create Pot and participant, and then go to pot site
-        user = User(form.username.value, form.yourmail.value, form.password.value)
-        DBSession.add(user)
-        return HTTPFound(location=request.route_url('home'))
+    if request.POST and form.validate():  # if submitted and and valid, create user
+        existing_user = DBSession.query(User).filter_by(username=form.username.value).first()  # check for eyisting user with this name, returns existing user or None
+        if not existing_user:
+            user = User(form.username.value, form.yourmail.value, form.password.value)
+            DBSession.add(user)
+            return HTTPFound(location=request.route_url('home'))
+        else:
+            request.session.flash(_(u'username already taken. Please choose another username.'))
     return {'form': form, 'logged_in': authenticated_userid(request)}
 
 
@@ -193,11 +197,6 @@ class PotView(object):
 @forbidden_view_config(renderer='templates/login.pt')
 def login(request):
     bootstrap_responsive_css.need()
-    login_url = request.route_url('login')
-    referrer = request.url
-    if referrer == login_url:
-        referrer = '/'  # never use the login form itself as came_from
-    came_from = request.params.get('came_from', referrer)
     form = login_form(request.POST or None)
     if request.POST and form.validate():
         login = form.username.value
@@ -206,12 +205,11 @@ def login(request):
         if user is not None and user.check_password(password):
             headers = remember(request, login)
             request.session.flash(_('Succesfully logged in'))
-            return HTTPFound(location=came_from,
+            return HTTPFound(location=request.route_url('overview'),
                              headers=headers)
         request.session.flash(_(u'Login failed<br />Please try again'))
 
     return dict(
-        came_from=came_from,
         form=form,
         logged_in=authenticated_userid(request),
         )
