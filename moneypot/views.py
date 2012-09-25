@@ -1,3 +1,4 @@
+# coding: utf-8
 from pyramid.view import view_config, forbidden_view_config
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 from pyramid.security import forget, remember, authenticated_userid
@@ -83,20 +84,29 @@ class PotView(object):
         '''
         Look for the pot document in the database, load is and create pot object and user
         '''
+        #save request for later use
         self.request = request
+
+        #all the potviews need bootstrap
         my_bootstrap.need()
+
+        #find the pot
         identifier = request.matchdict['identifier']
-        self.logged_in = authenticated_userid(self.request)
         self.participant = DBSession.query(Participant).filter_by(identifier=identifier).one()
         if self.participant is None:
             return
         self.pot = self.participant.pot
 
+        #check for logged in user
+        self.logged_in = authenticated_userid(self.request)
         logged_in = authenticated_userid(self.request)
         if logged_in:
             self.user = DBSession.query(User).filter_by(username=logged_in).first()
         else:
             self.user = None
+
+        #redirect to pot-home
+        self.redirect_to_pot = HTTPFound(location=self.request.route_url('pot', identifier=self.participant.identifier))
 
     @view_config(route_name='pot', renderer='templates/pot.pt')
     def pot_view(self):
@@ -112,8 +122,8 @@ class PotView(object):
                 fs.sync()
                 expensing_participant = DBSession.query(Participant).get(ex.participant_id)
                 expensing_participant.expenses.append(ex)
-                self.request.session.flash(_(u'The expense was added'))
-                return HTTPFound(location=self.request.route_url('pot', identifier=self.participant.identifier))
+                self.request.session.flash(_(u'The expense of {0} € was added.').format(ex.amount))
+                return self.redirect_to_pot
             else:
                 pass
                 #do nothing and return form with error messages
@@ -144,11 +154,51 @@ class PotView(object):
                 self.request.session.flash(_(u'''{0} wurde eingeladen. Wenn du eine Mailadresse
                 angegeben hast, wird ihm der Link per Mail geschickt. Sonst musst du ihm
                 folgenden Link zukommen lassen: <a href={1}>{1}</a>'''.format(invited.name, newurl)))
-                return HTTPFound(location=self.request.route_url('pot', identifier=self.participant.identifier))
+                return self.redirect_to_pot
             else:
                 pass
                 #do nothing and return form with error messages
         return {'form': fs, 'participant': self.participant, 'pot': self.pot}
+
+    @view_config(route_name='change_factor')
+    def change_factor(self):
+        '''
+        change the share factor of one of the participants
+        '''
+        if self.pot is None:
+            return HTTPNotFound(_('Now pot here'))
+        #get values from request
+        participant_id = self.request.matchdict['participant_to_change_id']
+        factor = self.request.matchdict['new_factor']
+        #change it to integer:
+        try:
+            factor = int(factor)
+        except ValueError:
+            #error message
+            #(should never occur from ui, only from improper http-requests
+            self.request.session.flash(_(u"Don't do this, not an integer"))
+            return self.redirect_to_pot
+
+        #load participant
+        changed_participant = DBSession.query(Participant).filter_by(identifier=participant_id).one()
+        #make sure participant exists and belongs to this pot!
+        if (not changed_participant) or (not changed_participant.pot == self.pot):
+            #error message
+            #(should never occur from ui, only from improper http-requests
+            self.request.session.flash(_(u"Don't do this"))
+            return self.redirect_to_pot
+
+        #make sure that the new share_factor_sum is != 0 (someone has to pay!)
+        new_factorsum = self.pot.share_factor_sum - changed_participant.share_factor + factor
+        if new_factorsum == 0:
+            #error message:
+            self.request.session.flash(_(u'The sum of all factors may not be 0'))
+            return self.redirect_to_pot
+
+        #if all checks were successfull, now do the change:
+        changed_participant.share_factor = factor
+        self.request.session.flash(_(u'The share factor for {0} was changed to {1}'.format(str(changed_participant), str(factor))))
+        return self.redirect_to_pot
 
     @view_config(route_name='remove_expense')
     def remove_expense(self):
@@ -156,12 +206,12 @@ class PotView(object):
         This view removes an expense
         '''
         if self.pot is None:
-            return HTTPNotFound(_('Hier ist kein Topf'))
+            return HTTPNotFound(_('Now pot here'))
         id_to_remove = self.request.matchdict['id_to_remove']
         expense = DBSession.query(Expense).get(id_to_remove)
         DBSession.delete(expense)
-        self.request.session.flash(_(u'Die Ausgabe wurde entfernt'))
-        return HTTPFound(location=self.request.route_url('pot', identifier=self.participant.identifier))
+        self.request.session.flash(_(u'The expense of {0} € got deleted').format(expense.amount))
+        return self.redirect_to_pot
 
     @view_config(route_name='take_ownership')
     def take_ownership(self):
@@ -175,7 +225,7 @@ class PotView(object):
             self.request.session.flash(_(u"The pot was added to 'My Pots'"))
         else:
             self.request.session.flash(_(u"Please log in"))
-        return HTTPFound(location=self.request.route_url('pot', identifier=self.participant.identifier))
+        return self.redirect_to_pot
 
     @view_config(route_name='archive')
     def archive(self):

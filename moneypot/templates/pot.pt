@@ -57,8 +57,21 @@
                             <tbody>
                                 <tr tal:repeat="person pot.participants">
                                     <td tal:content="person.name">Name</td>
-                                    <td class="number" tal:content="'%.2f' %person.sum">Ausgaben</td>
-                                    <td class="number" tal:content="person.share_factor">Ausgaben</td>
+                                    <td class="number" tal:content="'%.2f' %person.sum">Sum</td>
+                                    <td class="number"> <span tal:content="person.share_factor">Factor</span>
+                                        <!--! button to reduce the factor of this participant -->
+                                        <a href="${request.route_url('change_factor', 
+                                            identifier=participant.identifier, 
+                                            participant_to_change_id=person.identifier, 
+                                            new_factor=int(person.share_factor + 1) )}" 
+                                            class="btn" title="increase factor" rel="tooltip"><i class="icon-arrow-up" alt="increase factor"></i></a> 
+
+                                        <a href="${request.route_url('change_factor', 
+                                            identifier=participant.identifier, 
+                                            participant_to_change_id=person.identifier, 
+                                            new_factor=int(person.share_factor - 1))}" 
+                                            class="btn" title="reduce factor" rel="tooltip"><i class="icon-arrow-down" alt="reduce factor"></i></a> 
+                                            </td>
                                     <td class="number" tal:content="'%.2f' %person.result">Name</td>
                                     <td> 
                                         <!--! button to remove this participant from the pot -->
