@@ -18,7 +18,7 @@
                     <h1>${view.user.username}</h1>
                     <h2>Overview of your pots</h2>
                     <h4 tal:condition="view.user.result < 0">
-                        In total you have to pay <span style="color: #BD362F">${"%.2f" % view.user.result} &euro;</span>.
+                        In total you have to pay <span style="color: #BD362F">${"%.2f" % -view.user.result} &euro;</span>.
                     </h4>
                     <h4 tal:condition="view.user.result >= 0">
                         In total you will get <span style="color: #51A351">${"%.2f" % view.user.result} &euro;</span>.

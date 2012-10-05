@@ -31,6 +31,12 @@
                 <h1>${pot.name}</h1>
                 <h3>You are visiting this pot as ${participant.name}</h3>
                 <h4>In total ${"%.2f" % pot.sum} &euro; were spend.</h4>
+                <h4 tal:condition="participant.result < 0">
+                    You have to pay <span style="color: #BD362F">${"%.2f" % -participant.result} &euro;</span>.
+                </h4>
+                <h4 tal:condition="participant.result >= 0">
+                    In total you will get <span style="color: #51A351">${"%.2f" % participant.result} &euro;</span>.
+                </h4>
             </div>
         </div>
         <br />
