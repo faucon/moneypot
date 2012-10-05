@@ -244,3 +244,35 @@ class FunctionalTest(unittest.TestCase):
         self.login()
         logout_link = self.browser.getLink('Logout')
         logout_link.click()
+
+    def test_overview(self):
+        '''
+        log in as registered user, check in the overview page for newly created pots
+        '''
+        self.test_register_login_logout()
+        login_link = self.browser.getLink('Login')
+        login_link.click()
+        self.login()
+        #now we should directly be redirected to overview page
+        self.assertIn('Overview', self.browser.contents)
+        self.assertIn('alice', self.browser.contents)
+
+        #now create new pot
+        new_pot_link = self.browser.getLink('New Pot')
+        new_pot_link.click()
+        #name and email should be set automatically
+        potname = self.browser.getControl(name='HomeForm--potname')
+        potname.value = 'testpot'
+        submit = self.browser.getControl(name='submit')
+        submit.click()
+
+        #go to overview
+        overview_link = self.browser.getLink('My Pots')
+        overview_link.click()
+
+        self.assertIn('testpot', self.browser.contents)
+
+        archive_link = self.browser.getLink(url='archive')
+        archive_link.click()
+
+        #need to check that the pot was moved in the archive
