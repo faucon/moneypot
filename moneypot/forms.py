@@ -1,7 +1,8 @@
 from formalchemy import forms
 from formalchemy import tables
-from formalchemy.fields import Field
+from formalchemy.fields import Field, HTML5DateFieldRenderer
 from formalchemy import validators
+from formalchemy import fatypes
 from pyramid.renderers import get_renderer
 from fa.bootstrap.views import ModelView as Base
 from fa.bootstrap import fanstatic_resources
@@ -14,7 +15,13 @@ from moneypot.utils import dummy_translate as _
 
 
 class FieldSet(forms.FieldSet):
-    pass
+
+    def __init__(self, *args, **kwargs):
+        '''
+        change default renderer for DateType
+        '''
+        super(FieldSet, self).__init__(*args, **kwargs)
+        self.default_renderers[fatypes.Date] = HTML5DateFieldRenderer
 
 
 class Grid(tables.Grid):
