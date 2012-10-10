@@ -51,6 +51,9 @@ setup(name='moneypot',
       entry_points="""\
       [paste.app_factory]
       main = moneypot:main
+
+      [fanstatic.libraries]
+      datepicker = moneypot.renderer:datepicker_library
       """,
       paster_plugins=['pyramid'],
       )
