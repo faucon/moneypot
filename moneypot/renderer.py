@@ -63,6 +63,10 @@ class BootstrapDateFieldRenderer(FieldRenderer):
         '''
         if self.name in self.params:
             entered_value = self.params.getone(self.name)
-            return time.strftime('%Y-%m-%d', time.strptime(entered_value, self.format))
+            try:
+                return time.strftime('%Y-%m-%d', time.strptime(entered_value, self.format))
+            except ValueError:
+                #conversion does not work.. just return entered value and let formalchemy produce a validation error
+                return entered_value
         else:
             return time.strftime(self.format, time.localtime())
