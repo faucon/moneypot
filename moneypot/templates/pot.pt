@@ -81,7 +81,8 @@
                                     <td class="number" tal:content="'%.2f' %person.result">Name</td>
                                     <td> 
                                         <!--! button to remove this participant from the pot -->
-                                        <a href="${request.route_url('remove_participant', identifier=participant.identifier, identifier_to_remove=person.identifier)}" 
+                                        <a href="${request.route_url('remove_participant', identifier=participant.identifier, 
+                                            id_participant_to_remove=person.id)}" 
                                             class="btn" title="remove participant" rel="tooltip"><i class="icon-remove" alt="remove participant"></i></a> 
                                     </td>
                                 </tr>

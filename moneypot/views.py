@@ -1,6 +1,7 @@
 # coding: utf-8
 from pyramid.view import view_config, forbidden_view_config
-from pyramid.httpexceptions import HTTPFound, HTTPNotFound
+from pyramid.httpexceptions import HTTPFound
+from pyramid.exceptions import NotFound
 from pyramid.security import forget, remember, authenticated_userid
 from js.bootstrap import bootstrap_responsive_css, bootstrap_js
 from fanstatic import Group
@@ -52,6 +53,10 @@ def view_home(context, request):
         if logged_in:
             user.participations.append(participant)
         return HTTPFound(location=request.route_url('pot', identifier=participant.identifier))
+
+    log.debug("Form: %s with model %s", str(id(form)), str(form.model))
+    log.debug("Field: %s", str(id(form.potname)))
+    log.debug("Form has errors? %s", str(form.errors))
     return {'form': form, 'logged_in': logged_in}
 
 
@@ -92,10 +97,12 @@ class PotView(object):
 
         #find the pot
         identifier = request.matchdict['identifier']
-        self.participant = DBSession.query(Participant).filter_by(identifier=identifier).one()
+        self.participant = DBSession.query(Participant).filter_by(identifier=identifier).first()
         if self.participant is None:
-            return
+            raise NotFound(_(u'No Pot found'))
         self.pot = self.participant.pot
+        if self.pot is None:
+            raise NotFound(_(u'No Pot found'))
 
         #check for logged in user
         self.logged_in = authenticated_userid(self.request)
@@ -110,8 +117,6 @@ class PotView(object):
 
     @view_config(route_name='pot', renderer='templates/pot.pt')
     def pot_view(self):
-        if self.pot is None:
-            return HTTPNotFound(_('Now pot here'))
         fs = expense_form(DBSession, self.participant)
         if 'submit' in self.request.POST:
             log.debug('Try to save a new expense, called from participant {0} {1}'.format(self.participant, self.participant.identifier))
@@ -134,8 +139,6 @@ class PotView(object):
         '''
         This view shows an form for inviting someone
         '''
-        if self.pot is None:
-            return HTTPNotFound(_('Hier ist kein Topf'))
         fs = invite_form(DBSession)
         if 'submit' in self.request.POST:
             log.debug('Try to invite a new participant, called from participant {0} {1}'.format(self.participant, self.participant.identifier))
@@ -165,8 +168,6 @@ class PotView(object):
         '''
         change the share factor of one of the participants
         '''
-        if self.pot is None:
-            return HTTPNotFound(_('Now pot here'))
         #get values from request
         participant_id = self.request.matchdict['participant_to_change_id']
         factor = self.request.matchdict['new_factor']
@@ -205,21 +206,52 @@ class PotView(object):
         '''
         This view removes an expense
         '''
-        if self.pot is None:
-            return HTTPNotFound(_('Now pot here'))
         id_to_remove = self.request.matchdict['id_to_remove']
         expense = DBSession.query(Expense).get(id_to_remove)
         DBSession.delete(expense)
         self.request.session.flash(_(u'The expense of {0} € got deleted').format(expense.amount))
         return self.redirect_to_pot
 
+    @view_config(route_name='remove_participant', renderer='templates/question.pt')
+    def remove_participant(self):
+        '''
+        This view removes an participant,
+        it shows a warning if this participant already added expenses
+        '''
+        id_participant_to_remove = self.request.matchdict['id_participant_to_remove']
+        participant = DBSession.query(Participant).get(id_participant_to_remove)
+
+        #check if a participant was found
+        if None == participant:
+            self.request.session.flash(_(u"An error occured while searching the participant"))
+            return self.redirect_to_pot
+
+        #check if participant belongs to this pot
+        # should not occur from ui, but only from "hackish" calls
+        if participant.pot != self.pot:
+            self.request.session.flash(_(u"This is not allowed!"))
+            return self.redirect_to_pot
+        #now everything should be fine
+
+        # if participant has no expenses, delete him right away,
+        # if he has expenses, wait for "submit" which means that the user confirmed his choice
+        if not participant.expenses or 'submit' in self.request.POST:
+            DBSession.delete(participant)
+            self.request.session.flash(_(u'The participant {0} and all his expenses got deleted').format(participant.name))
+            return self.redirect_to_pot
+        else:
+            question = {
+                    'title': _(u'Delete {0}?').format(participant.name),
+                    'message': _(u'The participant {0} already entered some expenses. These would be lost. Are you sure you want to proceed?').format(participant.name)
+                    }
+            log.debug('return a question')
+            return {'question': question, }
+
     @view_config(route_name='take_ownership')
     def take_ownership(self):
         '''
         add this pot (with given identifier) to the users list of "my pots"
         '''
-        if self.pot is None:
-            return HTTPNotFound(_('Now pot here'))
         if self.user:
             self.participant.user = self.user
             self.request.session.flash(_(u"The pot was added to 'My Pots'"))
@@ -234,8 +266,6 @@ class PotView(object):
         (it will be shown in archived pots on his list, not under active pots - for the overall sum for the user only active pots account)
         '''
         #to archive pot, set status in participant object to archived
-        if self.pot is None:
-            return HTTPNotFound(_('Now pot here'))
         #if not logged in, refer user to login page
         if self.user is None:
             return HTTPFound(location=self.request.route_url('login'))

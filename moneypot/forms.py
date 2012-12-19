@@ -9,6 +9,9 @@ from fa.bootstrap import fanstatic_resources
 
 import datetime
 
+import logging
+log = logging.getLogger(__name__)
+
 from moneypot.models import Expense, Participant
 
 from moneypot.utils import dummy_translate as _
@@ -23,6 +26,11 @@ class FieldSet(forms.FieldSet):
         '''
         super(FieldSet, self).__init__(*args, **kwargs)
         self.default_renderers[fatypes.Date] = BootstrapDateFieldRenderer
+
+    def validate(self, *args, **kwargs):
+        '''log all validate calls for debug reasons'''
+        log.debug('validate called on %s', str(self))
+        super(FieldSet, self).validate(*args, **kwargs)
 
 
 class Grid(tables.Grid):
@@ -42,18 +50,21 @@ class ModelView(Base):
         fanstatic_resources.bootstrap.need()
 
 
-class HomeForm(object):
-    '''form for the home view'''
-
-    potname = Field().label(_(u'Pot name')).required()
-    yourname = Field().label(_(u'Your name')).required()
-    yourmail = Field().label(_(u'Your email')).validate(validators.email)
-
-
 def home_form(data=None):
     '''
     create Form for creating a Pot with one participant
     '''
+
+    #this class is local, to fix a problem with persistent instances if the fields,
+    #so not only new instances are created (with the same instances of Fields every time for all form instances)
+    #but the whole class is created when this function is called
+    class HomeForm(object):
+        '''form for the home view'''
+
+        potname = Field().label(_(u'Pot name')).required()
+        yourname = Field().label(_(u'Your name')).required()
+        yourmail = Field().label(_(u'Your email')).validate(validators.email)
+
     home_fs = FieldSet(HomeForm, data=data)
     return home_fs
 
@@ -127,3 +138,15 @@ def register_form(data=None):
     register_fs.configure(
             include=[register_fs.username, register_fs.yourmail, register_fs.password, register_fs.password_confirm])
     return register_fs
+
+
+class Question(object):
+    '''
+    a question object
+
+    does nothing than transport a message
+    '''
+
+    def __init__(self, title, message):
+        self.title = title
+        self.message = message
