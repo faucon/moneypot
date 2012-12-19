@@ -30,7 +30,7 @@ class FieldSet(forms.FieldSet):
     def validate(self, *args, **kwargs):
         '''log all validate calls for debug reasons'''
         log.debug('validate called on %s', str(self))
-        super(FieldSet, self).validate(*args, **kwargs)
+        return super(FieldSet, self).validate(*args, **kwargs)
 
 
 class Grid(tables.Grid):
