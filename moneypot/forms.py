@@ -97,16 +97,16 @@ def invite_form(DBSession, data=None):
     return invite_fs
 
 
-class LoginForm(object):
-    '''form for the login view'''
-    username = Field().label(_(u'Username')).required()
-    password = Field().label(_(u'Password')).required().password()
-
-
 def login_form(data=None):
     '''
     create Form to login user
     '''
+    #local class, as explained above for HomeForm
+    class LoginForm(object):
+        '''form for the login view'''
+        username = Field().label(_(u'Username')).required()
+        password = Field().label(_(u'Password')).required().password()
+
     login_fs = FieldSet(LoginForm, data=data)
     login_fs.configure(
             include=[login_fs.username, login_fs.password])
@@ -120,19 +120,18 @@ def passwd_validator(value, field):
         raise validators.ValidationError(_(u'Password do not match'))
 
 
-class RegisterForm(object):
-    '''form for the register view'''
-
-    username = Field().label(_(u'Username')).required()
-    yourmail = Field().label(_(u'Your email')).required().validate(validators.email)
-    password = Field().label(_(u'Password')).required().password()
-    password_confirm = Field().label(_(u'Confirm password')).required().password().validate(passwd_validator)
-
-
 def register_form(data=None):
     '''
     create Form to register User
     '''
+    #local class, as explained for homeForm
+    class RegisterForm(object):
+        '''form for the register view'''
+
+        username = Field().label(_(u'Username')).required()
+        yourmail = Field().label(_(u'Your email')).required().validate(validators.email)
+        password = Field().label(_(u'Password')).required().password()
+        password_confirm = Field().label(_(u'Confirm password')).required().password().validate(passwd_validator)
 
     register_fs = FieldSet(RegisterForm, data=data)
     register_fs.configure(

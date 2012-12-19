@@ -41,15 +41,9 @@ class BootstrapDateFieldRenderer(FieldRenderer):
         '''
         renders the field.
         Formalchemy usually uses webhelpers, here just formatted python string.
-
-        first version
-            <div class="input-append date" id="{html_id}" data-date="{value}" data-date-format="{format}">
-                <input class="span2" size="16" type="text" value="{value}">
-                <span class="add-on"><i class="icon-th"></i></span>
-            </div>
-                alert($("#{html_id}"));
         '''
         datepicker_js.need()
+        #we would like to have {{autoclose: true}} but this does not work...
         return '''
             <input type="text" id="{html_id}" name="{html_id}" data-date-format="{format}" value="{value}" class="span2">
             <script type="text/javascript">
