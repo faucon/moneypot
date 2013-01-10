@@ -8,6 +8,7 @@ def includeme(config):
     config.add_route('expenses_download', '/pot/{identifier}/download.csv')
     config.add_route('take_ownership', '/pot/{identifier}/take/')
     config.add_route('archive', '/pot/{identifier}/archive/')
+    config.add_route('unarchive', '/pot/{identifier}/unarchive/')
     config.add_route('login', '/login/')
     config.add_route('logout', '/logout/')
     config.add_route('register', '/register/')

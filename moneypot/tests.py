@@ -139,9 +139,9 @@ class FunctionalTest(unittest.TestCase):
     def setUp(self):
         from moneypot import main
         self.browser = Browser(wsgi_app=main({},
-            **{'sqlalchemy.url': "sqlite://",
-                'debugmail': 'true',
-                'mail.default_sender': 'moneypot@trescher.fr',
+                **{'sqlalchemy.url': "sqlite://",
+                    'debugmail': 'true',
+                    'mail.default_sender': 'moneypot@trescher.fr',
                 }))
 
     def invite_bob(self, email=''):
@@ -276,3 +276,9 @@ class FunctionalTest(unittest.TestCase):
         archive_link.click()
 
         #need to check that the pot was moved in the archive
+        #just try to unarchive it
+
+        unarchive_link = self.browser.getLink(url='unarchive')
+        unarchive_link.click()
+
+        #TODO: check somehow it was really unarchived.

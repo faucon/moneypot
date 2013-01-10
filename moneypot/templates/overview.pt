@@ -84,7 +84,10 @@
                             <td class="number" tal:content="'%.2f' %participation.sum"></td>
                             <td class="number" tal:content="'%.2f' %participation.result"></td>
                             <td>
-                                <!-- TODO: de-archive this pot -->
+                                <a href="${view.request.route_url('unarchive', identifier=participation.identifier)}" alt="unarchive this pot"
+                                    rel="tooltip" title="unarchive this pot" >
+                                    <i class="icon-arrow-up"></i>
+                                </a>
                             </td>
                         </tr>
                     </tbody>

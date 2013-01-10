@@ -13,18 +13,18 @@ log = logging.getLogger(__name__)
 
 from moneypot.models import DBSession
 from moneypot.models import (
-        Pot,
-        Participant,
-        Expense,
-        User,
-        STATUS)
+    Pot,
+    Participant,
+    Expense,
+    User,
+    STATUS)
 
 from moneypot.forms import (
-        home_form,
-        expense_form,
-        invite_form,
-        register_form,
-        login_form)
+    home_form,
+    expense_form,
+    invite_form,
+    register_form,
+    login_form)
 from moneypot.utils import dummy_translate as _
 from moneypot import mails
 
@@ -241,9 +241,9 @@ class PotView(object):
             return self.redirect_to_pot
         else:
             question = {
-                    'title': _(u'Delete {0}?').format(participant.name),
-                    'message': _(u'The participant {0} already entered some expenses. These would be lost. Are you sure you want to proceed?').format(participant.name)
-                    }
+                'title': _(u'Delete {0}?').format(participant.name),
+                'message': _(u'The participant {0} already entered some expenses. These would be lost. Are you sure you want to proceed?').format(participant.name)
+            }
             log.debug('return a question')
             return {'question': question, }
 
@@ -272,6 +272,19 @@ class PotView(object):
         self.participant.status = STATUS.ARCHIVED
         return HTTPFound(location=self.request.route_url('overview'))
 
+    @view_config(route_name='unarchive')
+    def unarchive(self):
+        '''
+        unarchive this pot for logged in user,
+        move it again to "open" pots
+        '''
+        #to archive pot, set status in participant object to archived
+        #if not logged in, refer user to login page
+        if self.user is None:
+            return HTTPFound(location=self.request.route_url('login'))
+        self.participant.status = STATUS.OPEN
+        return HTTPFound(location=self.request.route_url('overview'))
+
 
 @view_config(route_name='login', renderer='templates/login.pt')
 @forbidden_view_config(renderer='templates/login.pt')
@@ -292,7 +305,7 @@ def login(request):
     return dict(
         form=form,
         logged_in=authenticated_userid(request),
-        )
+    )
 
 
 @view_config(route_name='logout')
