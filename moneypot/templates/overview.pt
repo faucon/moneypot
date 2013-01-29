@@ -1,7 +1,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" xmlns:tal="http://xml.zope.org/namespaces/tal"
     xmlns:metal="http://xml.zope.org/namespaces/metal"
-    tal:define="master load: ./main_template.pt" metal:use-macro="master.macros['master']" >
+    tal:define="master load: ./main_template.pt" metal:use-macro="master.macros['master']"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="moneypot">
     <!--!
     This template displays a personalized overview for logged in users.
     For now it contains a list of all the users pots.

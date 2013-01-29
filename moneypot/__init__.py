@@ -26,6 +26,7 @@ def main(global_config, **settings):
     engine = engine_from_config(settings, 'sqlalchemy.')
     appmaker(engine)
     config = Configurator(settings=settings, session_factory=my_session_factory, root_factory='moneypot.RootFactory')
+    config.add_translation_dirs('moneypot:locale')
 
     if settings['debugmail'] == 'true':
         config.include('pyramid_mailer.testing')
@@ -52,4 +53,5 @@ def main(global_config, **settings):
                              view="moneypot.forms.ModelView")
 
     config.scan()
+
     return config.make_wsgi_app()

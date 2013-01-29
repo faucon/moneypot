@@ -2,7 +2,8 @@
 from pyramid_mailer import get_mailer
 from pyramid_mailer.message import Message
 
-from moneypot.utils import dummy_translate as _
+from pyramid.i18n import TranslationStringFactory
+_ = TranslationStringFactory('moneypot')
 
 
 def new_pot_mail(request, pot, participant, url):

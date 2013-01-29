@@ -1,7 +1,8 @@
 <metal:main metal:define-macro="master">
-<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xml:lang="en" xmlns:tal="http://xml.zope.org/namespaces/tal">
+    xml:lang="en" xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="moneypot">
 <head>
   <title metal:define-slot='title'>fa.bootstrap</title>
   <meta charset="utf-8"/>
@@ -19,7 +20,6 @@
 <div tal:condition="exists: view.logged_in"> 
     <span tal:define="global logged_in view.logged_in"></span>
 </div>
-
   <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">

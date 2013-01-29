@@ -15,15 +15,17 @@ requires = [
     'zope.sqlalchemy',
     'fa.bootstrap',
     'pyramid_mailer',
+    'Babel',
+    'lingua',
     'zope.testbrowser',
     'webtest',
     'beautifulsoup4',
-    ]
+]
 
 test_requires = [
-        'zope.testbrowser',
-        'webtest'
-        ]
+    'zope.testbrowser',
+    'webtest'
+]
 
 if sys.version_info[:3] < (2, 5, 0):
     requires.append('pysqlite')
@@ -33,11 +35,11 @@ setup(name='moneypot',
       description='moneypot',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[
-        "Programming Language :: Python",
-        "Framework :: Pylons",
-        "Topic :: Internet :: WWW/HTTP",
-        "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
-        ],
+          "Programming Language :: Python",
+          "Framework :: Pylons",
+          "Topic :: Internet :: WWW/HTTP",
+          "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+      ],
       author='',
       author_email='',
       url='',
@@ -56,4 +58,8 @@ setup(name='moneypot',
       datepicker = moneypot.renderer:datepicker_library
       """,
       paster_plugins=['pyramid'],
+      message_extractors={'moneypot': [
+             ('**.py',   'lingua_python', None),
+             ('**.pt',   'lingua_xml', None),
+      ]},
       )

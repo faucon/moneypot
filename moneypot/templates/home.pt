@@ -1,5 +1,7 @@
 <metal:main_template 
-    tal:define="master load: ./main_template.pt" metal:use-macro="master.macros['master']" >
+    tal:define="master load: ./main_template.pt" metal:use-macro="master.macros['master']"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="moneypot">
 <title metal:fill-slot="title">Moneypot</title>
 <body metal:fill-slot="body">
     <div class="row">

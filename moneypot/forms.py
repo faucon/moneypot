@@ -1,3 +1,6 @@
+'''
+FormAlchemy Forms can translate labels of fields, but for this to work they need to know the request!
+'''
 from formalchemy import forms
 from formalchemy import tables
 from formalchemy.fields import Field
@@ -14,8 +17,10 @@ log = logging.getLogger(__name__)
 
 from moneypot.models import Expense, Participant
 
-from moneypot.utils import dummy_translate as _
 from moneypot.renderer import BootstrapDateFieldRenderer
+from pyramid.i18n import TranslationStringFactory
+
+_ = TranslationStringFactory('moneypot')
 
 
 class FieldSet(forms.FieldSet):
@@ -50,7 +55,7 @@ class ModelView(Base):
         fanstatic_resources.bootstrap.need()
 
 
-def home_form(data=None):
+def home_form(request, data=None):
     '''
     create Form for creating a Pot with one participant
     '''
@@ -65,11 +70,11 @@ def home_form(data=None):
         yourname = Field().label(_(u'Your name')).required()
         yourmail = Field().label(_(u'Your email')).validate(validators.email)
 
-    home_fs = FieldSet(HomeForm, data=data)
+    home_fs = FieldSet(HomeForm, data=data, request=request)
     return home_fs
 
 
-def expense_form(DBSession, participant, data=None):
+def expense_form(DBSession, participant, request, data=None):
     '''
     create FieldSet for Expense form,
     chosing appropriate participants and configure order of fields
@@ -80,24 +85,24 @@ def expense_form(DBSession, participant, data=None):
                 'Expense--date__month': str(tod.month),
                 'Expense--date__day': str(tod.day),
                 'Expense--participant_id': participant.id}
-    expense_fs = FieldSet(Expense, session=DBSession, data=data)
+    expense_fs = FieldSet(Expense, session=DBSession, data=data, request=request)
     expense_fs.configure(
             options=[expense_fs.participant.dropdown(options=participant.pot.participants)],
             include=[expense_fs.participant, expense_fs.date, expense_fs.description, expense_fs.amount])
     return expense_fs
 
 
-def invite_form(DBSession, data=None):
+def invite_form(DBSession, request):
     '''
     create Form to invite new participant
     '''
-    invite_fs = FieldSet(Participant, session=DBSession, data=data)
+    invite_fs = FieldSet(Participant, session=DBSession, request=request)
     invite_fs.configure(
             include=[invite_fs.name, invite_fs.email])
     return invite_fs
 
 
-def login_form(data=None):
+def login_form(request):
     '''
     create Form to login user
     '''
@@ -107,7 +112,7 @@ def login_form(data=None):
         username = Field().label(_(u'Username')).required()
         password = Field().label(_(u'Password')).required().password()
 
-    login_fs = FieldSet(LoginForm, data=data)
+    login_fs = FieldSet(LoginForm, request=request)
     login_fs.configure(
             include=[login_fs.username, login_fs.password])
     return login_fs
@@ -120,7 +125,7 @@ def passwd_validator(value, field):
         raise validators.ValidationError(_(u'Password do not match'))
 
 
-def register_form(data=None):
+def register_form(request):
     '''
     create Form to register User
     '''
@@ -133,7 +138,7 @@ def register_form(data=None):
         password = Field().label(_(u'Password')).required().password()
         password_confirm = Field().label(_(u'Confirm password')).required().password().validate(passwd_validator)
 
-    register_fs = FieldSet(RegisterForm, data=data)
+    register_fs = FieldSet(RegisterForm, request=request)
     register_fs.configure(
             include=[register_fs.username, register_fs.yourmail, register_fs.password, register_fs.password_confirm])
     return register_fs

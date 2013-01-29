@@ -8,19 +8,20 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import relationship
 
-from sqlalchemy import (ForeignKey,
-        Integer, Unicode, Enum, Float, Date, PickleType)
+from sqlalchemy import (ForeignKey, Integer, Unicode, Enum, Float, Date, PickleType)
 
 from formalchemy import Column
 from formalchemy.validators import (
-        required,
-        email,
-        )
+    required,
+    email,
+)
 
 from zope.sqlalchemy import ZopeTransactionExtension
 
 from moneypot.utils import create_identifier, hash_password
-from moneypot.utils import dummy_translate as _
+from pyramid.i18n import TranslationStringFactory
+
+_ = TranslationStringFactory('moneypot')
 
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
@@ -107,10 +108,10 @@ class Participant(Base):
 class Expense(Base):
     __tablename__ = 'expense'
     id = Column(Integer, primary_key=True)
-    date = Column(Date(), nullable=False, validate=required)
-    description = Column(Unicode(255), nullable=False, validate=required)
-    amount = Column(Float(), nullable=False, validate=required)
-    participant_id = Column(Integer(), ForeignKey('participant.id'))
+    date = Column(Date(), nullable=False, validate=required, label=_(u'date'))
+    description = Column(Unicode(255), nullable=False, validate=required, label=_(u'description'))
+    amount = Column(Float(), nullable=False, validate=required, label=_(u'amount'))
+    participant_id = Column(Integer(), ForeignKey('participant.id'), label=_(u'participant'))
 
     def __init__(self, date=None, description='', amount=''):
         self.date = date

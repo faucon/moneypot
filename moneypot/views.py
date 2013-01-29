@@ -25,14 +25,17 @@ from moneypot.forms import (
     invite_form,
     register_form,
     login_form)
-from moneypot.utils import dummy_translate as _
 from moneypot import mails
+from pyramid.i18n import TranslationStringFactory, get_locale_name, get_localizer
+
+_ = TranslationStringFactory('moneypot')
 
 
 @view_config(route_name='home', renderer='templates/home.pt')
 def view_home(context, request):
     my_bootstrap.need()    # we need css
     logged_in = authenticated_userid(request)
+    log.debug("Locale: " + get_locale_name(request))
     if logged_in:
         user = DBSession.query(User).filter_by(username=logged_in).first()
     if not request.POST and logged_in:
@@ -41,7 +44,7 @@ def view_home(context, request):
                 }
     else:
         data = None
-    form = home_form(request.POST or data)
+    form = home_form(request, data=request.POST or data)
     if request.POST and form.validate():  # if submitted and and valid, create Pot and participant, and then go to pot site
         log.debug("gutes Formular!")
         pot = Pot(form.potname.value)
@@ -63,7 +66,7 @@ def view_home(context, request):
 @view_config(route_name='register', renderer='templates/register.pt')
 def view_register(context, request):
     my_bootstrap.need()    # we need css
-    form = register_form(request.POST or None)
+    form = register_form(request)
     if request.POST and form.validate():  # if submitted and and valid, create user
         existing_user = DBSession.query(User).filter_by(username=form.username.value).first()  # check for eyisting user with this name, returns existing user or None
         if not existing_user:
@@ -79,11 +82,6 @@ class PotView(object):
     '''
     this encapsulates the views which act on a dedicated pot
     '''
-
-    #variables of this class
-    pot = None
-    participant = None
-    request = None
 
     def __init__(self, request):
         '''
@@ -117,7 +115,7 @@ class PotView(object):
 
     @view_config(route_name='pot', renderer='templates/pot.pt')
     def pot_view(self):
-        fs = expense_form(DBSession, self.participant)
+        fs = expense_form(DBSession, self.participant, self.request)
         if 'submit' in self.request.POST:
             log.debug('Try to save a new expense, called from participant {0} {1}'.format(self.participant, self.participant.identifier))
             ex = Expense()
@@ -139,7 +137,7 @@ class PotView(object):
         '''
         This view shows an form for inviting someone
         '''
-        fs = invite_form(DBSession)
+        fs = invite_form(DBSession, self.request)
         if 'submit' in self.request.POST:
             log.debug('Try to invite a new participant, called from participant {0} {1}'.format(self.participant, self.participant.identifier))
             invited = Participant()
@@ -290,17 +288,18 @@ class PotView(object):
 @forbidden_view_config(renderer='templates/login.pt')
 def login(request):
     bootstrap_responsive_css.need()
-    form = login_form(request.POST or None)
+    trans = get_localizer(request).translate
+    form = login_form(request)
     if request.POST and form.validate():
         login = form.username.value
         password = form.password.value
         user = DBSession.query(User).filter_by(username=login).first()  # returns user or None
         if user is not None and user.check_password(password):
             headers = remember(request, login)
-            request.session.flash(_('Succesfully logged in'))
+            request.session.flash(trans(_('Succesfully logged in')))
             return HTTPFound(location=request.route_url('overview'),
                              headers=headers)
-        request.session.flash(_(u'Login failed<br />Please try again'))
+        request.session.flash(trans(_(u'Login failed<br />Please try again')))
 
     return dict(
         form=form,
