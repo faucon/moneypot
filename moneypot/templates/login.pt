@@ -5,14 +5,14 @@
     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
     i18n:domain="moneypot">
 
-<title metal:fill-slot="title">
+<title metal:fill-slot="title" i18n:translate="">
     Moneypot - Login
 </title>
 
 <div metal:fill-slot="body">
     <div class="row">
         <div class="span12">
-            <h1>Login</h1>
+            <h1 i18n:translate="">Login</h1>
         </div>
     </div>
     <br />
@@ -21,7 +21,7 @@
                 <form class="form-horizontal" action="." method="post">
                 ${structure: form.render()}
             <div class="form-actions">
-                <button type="submit" name="submit" value="submit" class="btn btn-primary">Login</button>
+                <button type="submit" name="submit" value="submit" class="btn btn-primary" i18n:translate="">Login</button>
             </div>
             </form>
         </div>

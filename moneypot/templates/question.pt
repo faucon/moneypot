@@ -24,8 +24,8 @@
           ${question['message']}
             <form class="form-horizontal" action="" method="post">
                 <div class="form-actions">
-                    <button type="submit" name="submit" value="submit" class="btn btn-primary">Yes</button>
-                    <button type="submit" name="abort" value="abort" class="btn">No</button>
+                    <button type="submit" name="submit" value="submit" class="btn btn-primary" i18n:translate="">Yes</button>
+                    <button type="submit" name="abort" value="abort" class="btn" i18n:translate="">No</button>
                 </div>
             </form>
         </div>

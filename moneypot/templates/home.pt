@@ -6,7 +6,7 @@
 <body metal:fill-slot="body">
     <div class="row">
         <div class="span12">
-            <h1>New Pot</h1>
+            <h1 i18n:translate="new Pot">New Pot</h1>
         </div>
     </div>
     <div class="row">
@@ -14,11 +14,11 @@
             <form class="form-horizontal" action="." method="post">
                 ${structure: form.render()}
                 <div class="form-actions">
-                    <button type="submit" name="submit" value="submit" class="btn btn-primary">Create Pot</button>
+                    <button type="submit" name="submit" value="submit" class="btn btn-primary" i18n:translate="">Create Pot</button>
                 </div>
             </form>
         </div>
-        <div class="span6">Erklärbär</div>
+        <div class="span6" i18n:translate="homepage_explications">Explication</div>
     </div>
 </body>
 </metal:main_template>

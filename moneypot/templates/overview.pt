@@ -10,34 +10,34 @@
     Some of them might be archived, they are shown in a seperate list below.
     On top a total balance over all active pots is shown
     -->
-    <title metal:fill-slot="title">
-        Moneypot Overview for ${view.user.username}
+    <title metal:fill-slot="title" i18n:translate="">
+        Moneypot Overview for <span tal:replace="view.user.username" i18n:name="username" />
     </title>
  
     <div metal:fill-slot="body">
         <div class="row">
                 <div class="span12">
                     <h1>${view.user.username}</h1>
-                    <h2>Overview of your pots</h2>
-                    <h4 tal:condition="view.user.result < 0">
-                        In total you have to pay <span style="color: #BD362F">${"%.2f" % -view.user.result} &euro;</span>.
+                    <h2 i18n:translate="">Overview of your pots</h2>
+                    <h4 tal:condition="view.user.result &lt; 0">
+                        <span i18n:translate="">In total you have to pay <span style="color: #BD362F" tal:content="u'%.2f &euro;' % -view.user.result" i18n:name="amount" />.</span>
                     </h4>
-                    <h4 tal:condition="view.user.result >= 0">
-                        In total you will get <span style="color: #51A351">${"%.2f" % view.user.result} &euro;</span>.
+                    <h4 tal:condition="view.user.result &gt;= 0">
+                        <span i18n:translate="">In total you will get <span style="color: #51A351" tal:content="u'%.2f &euro;' % view.user.result" i18n:name="amount"/>.</span>
                     </h4>
                 </div>
         </div>
         <br />
         <div class="row">
             <div class="span12">
-                <h3> Active Pots </h3>
+                <h3 i18n:translate="">Active Pots</h3>
                 <table class="table table-striped table-bordered">
                     <thead>
                         <tr>
-                            <th>Pot</th>
-                            <th>you spend</th>
-                            <th>your balance</th>
-                            <th>Actions</th>
+                            <th i18n:translate="">Pot</th>
+                            <th i18n:translate="">you spend</th>
+                            <th i18n:translate="">your balance</th>
+                            <th i18n:translate="">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -48,18 +48,18 @@
                             <td class="number" tal:content="'%.2f' %participation.sum"></td>
                             <td class="number" tal:content="'%.2f' %participation.result"></td>
                             <td>
-                                
                                 <a href="${view.request.route_url('archive', identifier=participation.identifier)}" alt="archive this pot"
-                                    rel="tooltip" title="archive this pot" >
+                                    rel="tooltip" title="archive this pot"
+                                    i18n:attributes="title ; alt">
                                     <i class="icon-book"></i>
                                 </a>
                             </td>
                         </tr>
                     </tbody>
                     <thead>
-                        <th>Sum</th>
-                        <th class="number" tal:content="'%.2f' %view.user.sum">Sum</th>
-                        <th class="number" tal:content="'%.2f' %view.user.result">Balance</th>
+                        <th i18n:translate="">Sum</th>
+                        <th class="number" tal:content="'%.2f' %view.user.sum">X €</th>
+                        <th class="number" tal:content="'%.2f' %view.user.result">- Y€</th>
                         <th></th>
                     </thead>
                 </table>
@@ -68,26 +68,28 @@
 
         <div class="row">
             <div class="span12">
-                <h3> Archived Pots </h3>
+                <h3 i18n:translate="">Archived Pots</h3>
                 <table class="table table-striped table-bordered">
                     <thead>
                         <tr>
-                            <th>Pot</th>
-                            <th>you spend</th>
-                            <th>your balance</th>
-                            <th>Actions</th>
+                            <th i18n:translate="">Pot</th>
+                            <th i18n:translate="">you spend</th>
+                            <th i18n:translate="">your balance</th>
+                            <th i18n:translate="">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr tal:repeat="participation view.user.archived_participations">
                             <td><!--! show pot name as direct link to pot site -->
-                                <a href="${view.request.route_url('pot', identifier=participation.identifier)}" alt="view this pot" tal:content="participation.pot.name"></a>
+                                <a href="${view.request.route_url('pot', identifier=participation.identifier)}" alt="view this pot" tal:content="participation.pot.name"
+                                    i18n:attributes="alt"></a>
                             </td>
                             <td class="number" tal:content="'%.2f' %participation.sum"></td>
                             <td class="number" tal:content="'%.2f' %participation.result"></td>
                             <td>
                                 <a href="${view.request.route_url('unarchive', identifier=participation.identifier)}" alt="unarchive this pot"
-                                    rel="tooltip" title="unarchive this pot" >
+                                    rel="tooltip" title="unarchive this pot"
+                                    i18n:attributes="title ; alt">
                                     <i class="icon-arrow-up"></i>
                                 </a>
                             </td>

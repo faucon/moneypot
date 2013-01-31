@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: moneypot 0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-01-29 19:31+0100\n"
+"POT-Creation-Date: 2013-01-31 13:01+0100\n"
 "PO-Revision-Date: 2013-01-28 19:47+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: de <LL@li.org>\n"
@@ -19,7 +19,7 @@ msgstr ""
 
 #: moneypot/forms.py:69
 msgid "Pot name"
-msgstr "Name für den Pot"
+msgstr "Name des Pots"
 
 #: moneypot/forms.py:70
 msgid "Your name"
@@ -176,6 +176,41 @@ msgstr "Erfolgreich eingeloggt!"
 msgid "Login failed<br />Please try again"
 msgstr "Login fehlgeschlagen, <br /> bitte nochmals versuchen."
 
+#. Default: New Pot
+#: moneypot/templates/home.pt:9
+msgid "new Pot"
+msgstr "Neuer Pot"
+
+#: moneypot/templates/home.pt:17
+msgid "Create Pot"
+msgstr "Erstelle Pot"
+
+#. Default: Explication
+#: moneypot/templates/home.pt:21
+msgid "homepage_explications"
+msgstr "Ausführliche Erklärung zu Moneypot"
+
+#: moneypot/templates/invite.pt:6
+msgid "Moneypot ${pot.name} - invite new participant"
+msgstr "Moneypot $[pot.name} - Neuen Teilnehmer einladen"
+
+#: moneypot/templates/invite.pt:19
+msgid "Invite new participant"
+msgstr "Neuen Teilnehmer einladen"
+
+#: moneypot/templates/invite.pt:23
+msgid "Invite"
+msgstr "Einladen"
+
+#: moneypot/templates/login.pt:8
+msgid "Moneypot - Login"
+msgstr "Moneypot - Login"
+
+#: moneypot/templates/login.pt:15 moneypot/templates/login.pt:24
+#: moneypot/templates/main_template.pt:45
+msgid "Login"
+msgstr "Login"
+
 #. Default: Not yet registered?
 #: moneypot/templates/login.pt:31
 msgid "Not yet registered"
@@ -190,6 +225,179 @@ msgstr "Gehe zur"
 #: moneypot/templates/login.pt:32
 msgid "Registration"
 msgstr "Registrierung"
+
+#: moneypot/templates/main_template.pt:28
+msgid "New Pot"
+msgstr "Neuer Pot"
+
+#: moneypot/templates/main_template.pt:30
+msgid "My Pots"
+msgstr "Meine Pots"
+
+#: moneypot/templates/main_template.pt:40
+msgid "Logout"
+msgstr "Logout"
+
+#: moneypot/templates/overview.pt:13
+msgid "Moneypot Overview for ${username}"
+msgstr "Moneypot Übersicht für ${username}"
+
+#: moneypot/templates/overview.pt:21
+msgid "Overview of your pots"
+msgstr "Übersicht über deine Pots"
+
+#: moneypot/templates/overview.pt:23
+msgid "In total you have to pay ${amount}."
+msgstr "Insgesamt musst du ${amount} bezahlen."
+
+#: moneypot/templates/overview.pt:26
+msgid "In total you will get ${amount}."
+msgstr "Insgesamt bekommst du ${amount}."
+
+#: moneypot/templates/overview.pt:33
+msgid "Active Pots"
+msgstr "Aktive Pots"
+
+#: moneypot/templates/overview.pt:37 moneypot/templates/overview.pt:75
+msgid "Pot"
+msgstr "Pot"
+
+#: moneypot/templates/overview.pt:38 moneypot/templates/overview.pt:76
+msgid "you spend"
+msgstr "Du hast bezahlt"
+
+#: moneypot/templates/overview.pt:39 moneypot/templates/overview.pt:77
+msgid "your balance"
+msgstr "Dein Ergebnis"
+
+#: moneypot/templates/overview.pt:40 moneypot/templates/overview.pt:78
+#: moneypot/templates/pot.pt:126
+msgid "Actions"
+msgstr "Aktionen"
+
+#: moneypot/templates/overview.pt:51
+msgid "archive this pot"
+msgstr "archiviere diesen Pot"
+
+#: moneypot/templates/overview.pt:60
+msgid "Sum"
+msgstr "Summe"
+
+#: moneypot/templates/overview.pt:71
+msgid "Archived Pots"
+msgstr "Archivierte Pots."
+
+#: moneypot/templates/overview.pt:84
+msgid "view this pot"
+msgstr "Gehe zu diesem Pot"
+
+#: moneypot/templates/overview.pt:90
+msgid "unarchive this pot"
+msgstr "Hole diesen Pot aus dem Archiv."
+
+#: moneypot/templates/pot.pt:22
+msgid "Add to 'My Pots'"
+msgstr "Zur Liste 'Meine Pots' hinzufügen."
+
+#: moneypot/templates/pot.pt:34
+msgid "You are visiting this pot as ${name}"
+msgstr "Du besuchst diesen Topf als ${name}."
+
+#: moneypot/templates/pot.pt:35
+msgid "In total ${amount} were spend."
+msgstr "Insgesamt wurden ${amount} ausgegeben."
+
+#: moneypot/templates/pot.pt:37
+msgid "You have to pay ${amount}."
+msgstr "Du musst ${amount} bezahlen."
+
+#: moneypot/templates/pot.pt:40
+msgid "You will get ${amount}."
+msgstr "Du bekommst ${amount}."
+
+#: moneypot/templates/pot.pt:47
+msgid "Overview"
+msgstr "Übersicht"
+
+#: moneypot/templates/pot.pt:58
+msgid "Person"
+msgstr "Person"
+
+#: moneypot/templates/pot.pt:59
+msgid "spend"
+msgstr "hat ausgegeben"
+
+#: moneypot/templates/pot.pt:60
+msgid "factor"
+msgstr "Faktor"
+
+#: moneypot/templates/pot.pt:61
+msgid "balance"
+msgstr "Ergebnis"
+
+#: moneypot/templates/pot.pt:62
+msgid "actions"
+msgstr "Aktionen"
+
+#: moneypot/templates/pot.pt:71
+msgid "increase factor"
+msgstr "Faktor erhöhen"
+
+#: moneypot/templates/pot.pt:78
+msgid "reduce factor"
+msgstr "Faktor verringern"
+
+#: moneypot/templates/pot.pt:90
+msgid "remove participant"
+msgstr "Teilnehmer entfernen"
+
+#: moneypot/templates/pot.pt:98
+msgid "Invite new Participant"
+msgstr "Neuen Teilnehmer einladen"
+
+#: moneypot/templates/pot.pt:105
+msgid "Add Expense"
+msgstr "Ausgabe hinzufügen"
+
+#: moneypot/templates/pot.pt:109
+msgid "Add"
+msgstr "Hinzufügen"
+
+#: moneypot/templates/pot.pt:118
+msgid "List of expenses"
+msgstr "Liste der Ausgaben"
+
+#: moneypot/templates/pot.pt:122
+msgid "Date"
+msgstr "Datum"
+
+#: moneypot/templates/pot.pt:123
+msgid "Participant"
+msgstr "Teilnehmer"
+
+#: moneypot/templates/pot.pt:124
+msgid "Description"
+msgstr "Beschreibung"
+
+#: moneypot/templates/pot.pt:125
+msgid "Amount"
+msgstr "Betrag"
+
+#: moneypot/templates/pot.pt:137
+msgid "remove expense"
+msgstr "Ausgabe entfernen"
+
+#: moneypot/templates/pot.pt:144
+msgid "Download as csv"
+msgstr "Als csv downloaden"
+
+#: moneypot/templates/question.pt:27
+msgid "Yes"
+msgstr "Ja"
+
+#: moneypot/templates/question.pt:28
+msgid "No"
+msgstr "Nein"
 
 #: moneypot/templates/register.pt:8
 msgid "Moneypot - Register"
