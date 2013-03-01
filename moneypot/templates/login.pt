@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    tal:define="master load: ./main_template.pt" metal:use-macro="master.macros['master']" 
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="moneypot">
+
+<title metal:fill-slot="title" i18n:translate="">
+    Moneypot - Login
+</title>
+
+<div metal:fill-slot="body">
+    <div class="row">
+        <div class="span12">
+            <h1 i18n:translate="">Login</h1>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="span6">
+                <form class="form-horizontal" action="." method="post">
+                ${structure: form.render()}
+            <div class="form-actions">
+                <button type="submit" name="submit" value="submit" class="btn btn-primary" i18n:translate="">Login</button>
+            </div>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span6">
+            <h3 i18n:domain="moneypot" i18n:translate="Not yet registered">Not yet registered?</h3>
+            <span i18n:translate="Go to">Go to</span> <a href="${request.route_url('register')}" i18n:translate="Registration">Registration</a>
+        </div>
+    </div>
+</div>
+</html>

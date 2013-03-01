@@ -3,3 +3,8 @@
 *.un~
 *.swp
 *.pyc
+moneypot.egg-info/**
+*.egg
+moneypot.db
+.coverage
+.ropeproject/

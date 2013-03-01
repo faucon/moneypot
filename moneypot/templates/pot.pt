@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    tal:define="master load: ./main_template.pt" metal:use-macro="master.macros['master']"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="moneypot">
+    <!--!  
+    Use the main macro, and set title to the pots name
+    -->
+    <title metal:fill-slot="title">
+        Moneypot ${pot.name}
+    </title>
+
+    <metal:fill metal:fill-slot="main-navbar">
+    <!--!
+    Add an action to the main menu:
+    if this pot is not yet in the "My Pots" list of the currently logged in user
+    show him an icon to add this pot to the "my Pots" list.
+        -->
+        <tal:condition tal:condition="python: None == view.participant.user">
+            <li tal:condition="logged_in">
+            <a href="${view.request.route_url('take_ownership', identifier=view.participant.identifier)}"><i class="icon icon-plus"></i> <span i18n:translate="">Add to 'My Pots'</span></a>
+            </li>
+        </tal:condition>
+    </metal:fill>
+ 
+    <div metal:fill-slot="body">
+        <!--!
+        The main pot view, show first some general informations about name and total sum
+        -->
+        <div class="row">
+            <div class="span12">
+                <h1>${pot.name}</h1>
+                <h3 i18n:translate="">You are visiting this pot as <span tal:content="participant.name" i18n:name="name" /></h3>
+                <h4 i18n:translate="">In total <span style="color: #BD362F" tal:content="u'%.2f &euro;' % -pot.sum" i18n:name="amount"/> were spend.</h4>
+                <h4 tal:condition="participant.result &lt; 0">
+                    <span i18n:translate="">You have to pay <span style="color: #BD362F" tal:content="u'%.2f &euro;' % -participant.result" i18n:name="amount" />.</span>
+                </h4>
+                <h4 tal:condition="participant.result &gt;= 0">
+                    <span i18n:translate="">You will get <span style="color: #51A351" tal:content="u'%.2f &euro;' % participant.result" i18n:name="amount" />.</span>
+                </h4>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="span12">
+                <h2 i18n:translate="">Overview</h2>
+            </div>
+        </div>
+        <!--! per-user overview: who has spend how much, and how much does he have to pay? -->
+        <div class="row">
+            <div class="span6">
+                <div class="row">
+                    <div class="span6">
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th i18n:translate="">Person</th>
+                                    <th i18n:translate="">spend</th>
+                                    <th i18n:translate="">factor</th>
+                                    <th i18n:translate="">balance</th>
+                                    <th i18n:translate="">actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr tal:repeat="person pot.participants">
+                                    <td tal:content="person.name">Name</td>
+                                    <td class="number" tal:content="'%.2f' %person.sum">Sum</td>
+                                    <td class="number"> <span tal:content="person.share_factor">Factor</span>
+                                        <!--! button to reduce the factor of this participant -->
+                                        <a href="${request.route_url('change_factor', 
+                                            identifier=participant.identifier, 
+                                            participant_to_change_id=person.identifier, 
+                                            new_factor=int(person.share_factor + 1) )}" 
+                                            class="btn" title="increase factor" rel="tooltip"
+                                            i18n:attributes="title"><i class="icon-arrow-up" alt="increase factor"></i></a> 
+
+                                        <a href="${request.route_url('change_factor', 
+                                            identifier=participant.identifier, 
+                                            participant_to_change_id=person.identifier, 
+                                            new_factor=int(person.share_factor - 1))}" 
+                                            class="btn" title="reduce factor" rel="tooltip"
+                                            i18n:attributes="title"><i class="icon-arrow-down" alt="reduce factor"></i></a> 
+                                            </td>
+                                    <td class="number" tal:content="'%.2f' %person.result">X €</td>
+                                    <td> 
+                                        <!--! button to remove this participant from the pot -->
+                                        <a href="${request.route_url('remove_participant', identifier=participant.identifier, 
+                                            id_participant_to_remove=person.id)}" 
+                                            class="btn" title="remove participant" rel="tooltip" i18n:attributes="title ; alt"><i class="icon-remove"></i></a> 
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                <br />
+                <!--! Button to invite new participants to this pot-->
+                <a class="btn" href="${request.route_url('invite_participant', identifier=participant.identifier)}"> <i class="icon-user"></i> <span i18n:translate="">Invite new Participant</span></a>
+                    </div>
+                </div>
+
+            </div>
+            <div class="span6">
+                <!--! Form for adding a new expense -->
+                <h4 i18n:translate="">Add Expense</h4>
+                <form class="form-horizontal" action="." method="post">
+                ${structure: form.render()}
+                <div class="form-actions">
+                    <button type="submit" name="submit" value="submit" class="btn btn-primary" i18n:translate="">Add</button>
+                </div>
+                </form>
+            </div>
+        </div>
+
+        <br />
+        <div class="row">
+            <div class="span12" >
+            <h2 i18n:translate="">List of expenses</h2>
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th i18n:translate="">Date</th>
+                            <th i18n:translate="">Participant</th>
+                            <th i18n:translate="">Description</th>
+                            <th i18n:translate="">Amount</th>
+                            <th i18n:translate="">Actions</th>
+                        </tr> 
+                    </thead>
+                    <tbody>
+                        <tr tal:repeat="expense pot.expenses_sorted_by_date()">
+                            <td tal:content="expense.date.strftime('%d.%m.%y')">1.1.2012</td>
+                            <td tal:content="expense.participant.name">Username</td>
+                            <td tal:content="expense.description">description</td>
+                            <td><span tal:content="expense.amount">10,00</span> €</td>
+                            <td>
+                                <!--! button to remove a single expense -->
+                                <a 
+                                    href="${request.route_url('remove_expense', identifier=participant.identifier, id_to_remove=expense.id)}" 
+                                    class="btn" title="remove expense" i18n:attributes="title"><i class="icon-remove"></i></a> 
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <a class="btn" href="${request.route_url('expenses_download', identifier=participant.identifier)}"> <i class="icon-download"></i> <span i18n:translate="">Download as csv</span></a>
+            </div>
+
+        </div>
+        <br />
+    </div>
+</html>
