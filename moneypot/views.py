@@ -76,7 +76,7 @@ def view_register(context, request):
             return HTTPFound(location=request.route_url('home'))
         else:
             log.debug("Register failed for {0}".format(form.username.value))
-            request.session.flash(_(u'username already taken. Please choose another username.'))
+            request.session.flash(_(u'username already taken. Please choose another username.'), 'error')
     return {'form': form, 'logged_in': authenticated_userid(request)}
 
 
@@ -127,7 +127,7 @@ class PotView(object):
                 fs.sync()
                 expensing_participant = DBSession.query(Participant).get(ex.participant_id)
                 expensing_participant.expenses.append(ex)
-                self.request.session.flash(_(u'The expense of {0} € was added.').format(ex.amount))
+                self.request.session.flash(_(u'The expense of {0} € was added.').format(ex.amount), 'success')
                 return self.redirect_to_pot
             else:
                 pass
@@ -156,7 +156,7 @@ class PotView(object):
                         user.participations.append(invited)
                 self.request.session.flash(_(u'''{0} wurde eingeladen. Wenn du eine Mailadresse
                 angegeben hast, wird ihm der Link per Mail geschickt. Sonst musst du ihm
-                folgenden Link zukommen lassen: <a href={1}>{1}</a>'''.format(invited.name, newurl)))
+                folgenden Link zukommen lassen: <a href={1}>{1}</a>'''.format(invited.name, newurl)), 'success')
                 return self.redirect_to_pot
             else:
                 pass
@@ -193,12 +193,12 @@ class PotView(object):
         new_factorsum = self.pot.share_factor_sum - changed_participant.share_factor + factor
         if new_factorsum == 0:
             #error message:
-            self.request.session.flash(_(u'The sum of all factors may not be 0'))
+            self.request.session.flash(_(u'The sum of all factors may not be 0'), 'error')
             return self.redirect_to_pot
 
         #if all checks were successfull, now do the change:
         changed_participant.share_factor = factor
-        self.request.session.flash(_(u'The share factor for {0} was changed to {1}'.format(str(changed_participant), str(factor))))
+        self.request.session.flash(_(u'The share factor for {0} was changed to {1}'.format(str(changed_participant), str(factor))), 'success')
         return self.redirect_to_pot
 
     @view_config(route_name='remove_expense')
@@ -209,7 +209,7 @@ class PotView(object):
         id_to_remove = self.request.matchdict['id_to_remove']
         expense = DBSession.query(Expense).get(id_to_remove)
         DBSession.delete(expense)
-        self.request.session.flash(_(u'The expense of {0} € got deleted').format(expense.amount))
+        self.request.session.flash(_(u'The expense of {0} € got deleted').format(expense.amount), 'success')
         return self.redirect_to_pot
 
     @view_config(route_name='remove_participant', renderer='templates/question.pt')
@@ -237,7 +237,7 @@ class PotView(object):
         # if he has expenses, wait for "submit" which means that the user confirmed his choice
         if not participant.expenses or 'submit' in self.request.POST:
             DBSession.delete(participant)
-            self.request.session.flash(_(u'The participant {0} and all his expenses got deleted').format(participant.name))
+            self.request.session.flash(_(u'The participant {0} and all his expenses got deleted').format(participant.name), 'success')
             return self.redirect_to_pot
         else:
             question = {
@@ -254,9 +254,9 @@ class PotView(object):
         '''
         if self.user:
             self.participant.user = self.user
-            self.request.session.flash(_(u"The pot was added to 'My Pots'"))
+            self.request.session.flash(_(u"The pot was added to 'My Pots'"), 'success')
         else:
-            self.request.session.flash(_(u"Please log in"))
+            self.request.session.flash(_(u"Please log in"), 'error')
         return self.redirect_to_pot
 
     @view_config(route_name='archive')
@@ -298,11 +298,11 @@ def login(request):
         user = DBSession.query(User).filter_by(username=login).first()  # returns user or None
         if user is not None and user.check_password(password):
             headers = remember(request, login)
-            request.session.flash(trans(_('Succesfully logged in')))
+            request.session.flash(trans(_('Succesfully logged in')), 'success')
             return HTTPFound(location=request.route_url('overview'),
                              headers=headers)
         log.debug('Login failed {0}'.format(form.username.value))
-        request.session.flash(trans(_(u'Login failed<br />Please try again')))
+        request.session.flash(trans(_(u'Login failed<br />Please try again')), 'error')
 
     return dict(
         form=form,
@@ -351,9 +351,9 @@ class UserView(object):
         if self.request.POST and form.validate():
             if self.user.check_password(form.old_password.value):
                 self.user.set_password(form.password.value)     # form validator already checks if new password and confirmation field match
-                self.request.session.flash(trans(_('Succesfully changed password')))
+                self.request.session.flash(trans(_('Succesfully changed password')), 'success')
                 return HTTPFound(location=self.request.route_url('overview'))
-            self.request.session.flash(trans(_(u'Wrong password. Pleasy try again')))
+            self.request.session.flash(trans(_(u'Wrong password. Pleasy try again')), 'error')
 
         return dict(
             form=form,
