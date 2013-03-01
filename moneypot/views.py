@@ -24,7 +24,8 @@ from moneypot.forms import (
     expense_form,
     invite_form,
     register_form,
-    login_form)
+    login_form,
+    change_password_form)
 from moneypot import mails
 from pyramid.i18n import TranslationStringFactory, get_locale_name, get_localizer
 
@@ -74,6 +75,7 @@ def view_register(context, request):
             DBSession.add(user)
             return HTTPFound(location=request.route_url('home'))
         else:
+            log.debug("Register failed for {0}".format(form.username.value))
             request.session.flash(_(u'username already taken. Please choose another username.'))
     return {'form': form, 'logged_in': authenticated_userid(request)}
 
@@ -299,6 +301,7 @@ def login(request):
             request.session.flash(trans(_('Succesfully logged in')))
             return HTTPFound(location=request.route_url('overview'),
                              headers=headers)
+        log.debug('Login failed {0}'.format(form.username.value))
         request.session.flash(trans(_(u'Login failed<br />Please try again')))
 
     return dict(
@@ -336,3 +339,22 @@ class UserView(object):
         if not self.user:
             return HTTPFound(location=self.request.route_url('login'))
         return dict()
+
+    @view_config(route_name='change_password', renderer='templates/change_password.pt')
+    def change_password(self):
+        my_bootstrap.need()
+        if not self.user:
+            return HTTPFound(location=self.request.route_url('login'))
+
+        trans = get_localizer(self.request).translate
+        form = change_password_form(self.request)
+        if self.request.POST and form.validate():
+            if self.user.check_password(form.old_password.value):
+                self.user.set_password(form.password.value)     # form validator already checks if new password and confirmation field match
+                self.request.session.flash(trans(_('Succesfully changed password')))
+                return HTTPFound(location=self.request.route_url('overview'))
+            self.request.session.flash(trans(_(u'Wrong password. Pleasy try again')))
+
+        return dict(
+            form=form,
+        )

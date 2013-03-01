@@ -37,7 +37,10 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-user icon"></i> <span tal:replace="logged_in">User</span></a>
                 <ul class="dropdown-menu">
                     <li>
-                    <a href="${request.route_url('logout')}"><i class="icon-off"></i> <span i18n:translate="">Logout</span></a>
+                        <a href="${request.route_url('change_password')}"><i class="icon-edit"></i> <span i18n:translate="">Change Password</span></a>
+                    </li>
+                    <li>
+                        <a href="${request.route_url('logout')}"><i class="icon-off"></i> <span i18n:translate="">Logout</span></a>
                     </li>
                 </ul>
             </li>

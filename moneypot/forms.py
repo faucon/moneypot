@@ -118,6 +118,23 @@ def login_form(request):
     return login_fs
 
 
+def change_password_form(request):
+    '''
+    create Form to change password
+    '''
+    #local class, as explained above for HomeForm
+    class ChangePasswordForm(object):
+        '''form for the login view'''
+        old_password = Field().label(_(u'old password')).required().password()
+        password = Field().label(_(u'new password')).required().password()
+        confirm_password = Field().label(_(u'confirm new password')).required().password().validate(passwd_validator)
+
+    change_fs = FieldSet(ChangePasswordForm, request=request)
+    change_fs.configure(
+            include=[change_fs.old_password, change_fs.password, change_fs.confirm_password])
+    return change_fs
+
+
 def passwd_validator(value, field):
     '''validate that two password fields contain the same password'''
 

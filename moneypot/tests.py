@@ -144,6 +144,9 @@ class FunctionalTest(unittest.TestCase):
                     'mail.default_sender': 'moneypot@trescher.fr',
                 }))
 
+    def tearDown(self):
+        testing.tearDown()
+
     def invite_bob(self, email=''):
         '''
         start on pot site
@@ -199,13 +202,13 @@ class FunctionalTest(unittest.TestCase):
         submit = self.browser.getControl(name='submit')
         submit.click()
 
-    def login(self):
+    def login(self, username='alice', password='secret'):
         '''login Alice'''
-        username = self.browser.getControl(name='LoginForm--username')
-        password = self.browser.getControl(name='LoginForm--password')
+        username_control = self.browser.getControl(name='LoginForm--username')
+        password_control = self.browser.getControl(name='LoginForm--password')
 
-        username.value = 'alice'
-        password.value = 'secret'
+        username_control.value = username
+        password_control.value = password
 
         submit = self.browser.getControl(name='submit')
         submit.click()
@@ -244,6 +247,72 @@ class FunctionalTest(unittest.TestCase):
         self.login()
         logout_link = self.browser.getLink('Logout')
         logout_link.click()
+
+    def test_change_password(self):
+        '''
+        go to login page, from there follow "register" link.
+        register alice and go back to login page
+        login
+        change alices password
+        logout and
+        login with new password
+        '''
+        self.browser.open(self.SITE)
+        #go to login page
+        login_link = self.browser.getLink('Login')
+        login_link.click()
+        #follow registration link
+        register_link = self.browser.getLink('Registration')
+        register_link.click()
+        #register alice with password secret
+        self.register()
+        #log her in
+        login_link = self.browser.getLink('Login')
+        login_link.click()
+        self.login()
+
+        #try to change her password
+        change_password_link = self.browser.getLink('Change Password')
+        change_password_link.click()
+
+        old_password = self.browser.getControl(name='ChangePasswordForm--old_password')
+        new_password = self.browser.getControl(name='ChangePasswordForm--password')
+        confirm_password = self.browser.getControl(name='ChangePasswordForm--confirm_password')
+
+        old_password.value = 'secret'
+        new_password.value = 'newsecret'
+        confirm_password.value = 'newsecret'
+        submit = self.browser.getControl(name='submit')
+        submit.click()
+
+        self.assertIn('changed password', self.browser.contents)
+
+        #logout
+        logout_link = self.browser.getLink('Logout')
+        logout_link.click()
+
+        #login with new password
+        login_link = self.browser.getLink('Login')
+        login_link.click()
+        self.login(password='newsecret')
+        #try if login was successfull: logout link is only visible when logged in
+        logout_link = self.browser.getLink('Logout')
+
+        #change back
+        change_password_link = self.browser.getLink('Change Password')
+        change_password_link.click()
+
+        old_password = self.browser.getControl(name='ChangePasswordForm--old_password')
+        new_password = self.browser.getControl(name='ChangePasswordForm--password')
+        confirm_password = self.browser.getControl(name='ChangePasswordForm--confirm_password')
+
+        old_password.value = 'newsecret'
+        new_password.value = 'secret'
+        confirm_password.value = 'secret'
+        submit = self.browser.getControl(name='submit')
+        submit.click()
+
+        self.assertIn('changed password', self.browser.contents)
 
     def test_overview(self):
         '''
