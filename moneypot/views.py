@@ -32,38 +32,6 @@ from pyramid.i18n import TranslationStringFactory, get_locale_name, get_localize
 _ = TranslationStringFactory('moneypot')
 
 
-@view_config(route_name='home', renderer='templates/home.pt')
-def view_home(context, request):
-    my_bootstrap.need()    # we need css
-    logged_in = authenticated_userid(request)
-    log.debug("Locale: " + get_locale_name(request))
-    if logged_in:
-        user = DBSession.query(User).filter_by(username=logged_in).first()
-    if not request.POST and logged_in:
-        data = {'HomeForm--yourmail': user.email,
-                'HomeForm--yourname': user.username
-                }
-    else:
-        data = None
-    form = home_form(request, data=request.POST or data)
-    if request.POST and form.validate():  # if submitted and and valid, create Pot and participant, and then go to pot site
-        log.debug("gutes Formular!")
-        pot = Pot(form.potname.value)
-        DBSession.add(pot)
-        participant = Participant(name=form.yourname.value, email=form.yourmail.value)
-        pot.participants.append(participant)
-        if form .yourmail.value:
-            mails.new_pot_mail(request, pot, participant, request.route_url('pot', identifier=participant.identifier))
-        if logged_in:
-            user.participations.append(participant)
-        return HTTPFound(location=request.route_url('pot', identifier=participant.identifier))
-
-    log.debug("Form: %s with model %s", str(id(form)), str(form.model))
-    log.debug("Field: %s", str(id(form.potname)))
-    log.debug("Form has errors? %s", str(form.errors))
-    return {'form': form, 'logged_in': logged_in}
-
-
 @view_config(route_name='register', renderer='templates/register.pt')
 def view_register(context, request):
     my_bootstrap.need()    # we need css
@@ -332,6 +300,35 @@ class UserView(object):
         self.logged_in = authenticated_userid(request)
         if self.logged_in:
             self.user = DBSession.query(User).filter_by(username=self.logged_in).first()
+
+    @view_config(route_name='home', renderer='templates/home.pt')
+    def view_home(self):
+        request = self.request
+        my_bootstrap.need()    # we need css
+        log.debug("Locale: " + get_locale_name(request))
+        if not request.POST and self.logged_in and self.user:
+            data = {'HomeForm--yourmail': self.user.email,
+                    'HomeForm--yourname': self.user.username
+                    }
+        else:
+            data = None
+        form = home_form(request, data=request.POST or data)
+        if request.POST and form.validate():  # if submitted and and valid, create Pot and participant, and then go to pot site
+            log.debug("gutes Formular!")
+            pot = Pot(form.potname.value)
+            DBSession.add(pot)
+            participant = Participant(name=form.yourname.value, email=form.yourmail.value)
+            pot.participants.append(participant)
+            if form .yourmail.value:
+                mails.new_pot_mail(request, pot, participant, request.route_url('pot', identifier=participant.identifier))
+            if self.logged_in:
+                self.user.participations.append(participant)
+            return HTTPFound(location=request.route_url('pot', identifier=participant.identifier))
+
+        log.debug("Form: %s with model %s", str(id(form)), str(form.model))
+        log.debug("Field: %s", str(id(form.potname)))
+        log.debug("Form has errors? %s", str(form.errors))
+        return {'form': form, 'logged_in': self.logged_in}
 
     @view_config(route_name='overview', renderer='templates/overview.pt')
     def overview(self):
