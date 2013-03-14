@@ -164,7 +164,7 @@ class FunctionalTest(unittest.TestCase):
 
         #now look for link for bob
         soup = BeautifulSoup(self.browser.contents)
-        boblink = soup.find('div', 'well').a['href']  # the link is inside the first "well" (where messages are presented)
+        boblink = soup.find('div', 'alert').a['href']  # the link is inside the first "alert" (where messages are presented)
         return boblink
 
     def create_pot(self):
@@ -186,6 +186,9 @@ class FunctionalTest(unittest.TestCase):
 
         submit = self.browser.getControl(name='submit')
         submit.click()
+
+    def remove_expense(self):
+        pass
 
     def register(self):
         '''register Alice'''
@@ -218,9 +221,12 @@ class FunctionalTest(unittest.TestCase):
 
     def test_invite_bob(self):
         self.create_pot()
-        boblink = self.invite_bob()
+        boblink = self.invite_bob('test@example.org')
         #try to call this site
         self.browser.open(boblink)
+        #try to remove someone
+        link = self.browser.getLink(url="remove")
+        link.click()
 
     def test_add_expense(self):
         self.create_pot()
@@ -228,6 +234,16 @@ class FunctionalTest(unittest.TestCase):
         soup = BeautifulSoup(self.browser.contents)
         expense_text = soup.find('td', text="42.00")
         self.assertIsNotNone(expense_text)
+
+    def test_remove_expense(self):
+        self.create_pot()
+        self.add_expense()
+        soup = BeautifulSoup(self.browser.contents)
+        expense_text = soup.find('td', text="42.00")
+        self.assertIsNotNone(expense_text)
+        self.remove_expense()
+        amount_text = soup.find('td', text="0.00")
+        self.assertIsNotNone(amount_text)
 
     def test_register_login_logout(self):
         '''
@@ -336,7 +352,7 @@ class FunctionalTest(unittest.TestCase):
         submit.click()
 
         #go to overview
-        overview_link = self.browser.getLink('My Pots')
+        overview_link = self.browser.getLink('Overview')
         overview_link.click()
 
         self.assertIn('testpot', self.browser.contents)

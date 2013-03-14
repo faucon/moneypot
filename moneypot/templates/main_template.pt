@@ -26,8 +26,18 @@
           <a class="brand" href="${request.application_url}">Moneypot</a>
           <ul class="nav">
                 <li><a href="${request.application_url}"><i class="icon icon-star-empty"></i> <span i18n:translate="">New Pot</span></a></li>
-                <li tal:condition="logged_in">
-                    <a href="${request.route_url('overview')}"><i class="icon icon-th-list"></i> <span i18n:translate="">My Pots</span></a>
+                <li tal:condition="logged_in" class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-th-list icon"></i> <span i18n:translate="">My Pots</span></a>
+                    <ul class="dropdown-menu">
+                        <li tal:repeat="participation view.user.active_participations">
+                            <!--! show pot name as direct link to pot site -->
+                           <a href="${view.request.route_url('pot', identifier=participation.identifier)}" alt="view this pot" tal:content="participation.pot.name"></a>
+                        </li>
+                        <li class="divider" role="presentation"></li>
+                        <li>
+                            <a href="${request.route_url('overview')}"><i class="icon icon-th-list"></i> <span i18n:translate="">Overview</span></a>
+                        </li>
+                    </ul>
                 </li>
                 <metal:define metal:define-slot="main-navbar">
                 </metal:define>
