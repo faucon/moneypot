@@ -2,6 +2,7 @@
 from pyramid.view import view_config, forbidden_view_config
 from pyramid.httpexceptions import HTTPFound
 from pyramid.exceptions import NotFound
+from pyramid.response import Response
 from pyramid.security import forget, remember, authenticated_userid
 from js.bootstrap import bootstrap_responsive_css, bootstrap_js
 from fanstatic import Group
@@ -214,6 +215,15 @@ class PotView(object):
             }
             log.debug('return a question')
             return {'question': question, }
+
+    @view_config(route_name='expenses_download')
+    def expenses_download(self):
+        '''
+        This view returns a csv_file of the pots expenses
+        '''
+        response = Response(content_type='text/csv')
+        self.pot.write_csv(response)
+        return response
 
     @view_config(route_name='take_ownership')
     def take_ownership(self):

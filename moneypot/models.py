@@ -18,8 +18,10 @@ from formalchemy.validators import (
 
 from zope.sqlalchemy import ZopeTransactionExtension
 
-from moneypot.utils import create_identifier, hash_password
 from pyramid.i18n import TranslationStringFactory
+import csv
+
+from moneypot.utils import create_identifier, hash_password
 
 _ = TranslationStringFactory('moneypot')
 
@@ -68,6 +70,24 @@ class Pot(Base):
     def expenses_sorted_by_date(self):
         '''all expenses in this pot, sorted ascending by date'''
         return DBSession.query(Expense).order_by('date').join(Participant).join(Pot).filter_by(id=self.id).all()
+
+    def write_csv(self, target):
+        '''
+        write list of expenses as a csv
+        target should be file-like (should have a writerow function)
+        '''
+        tempdicts = []
+        for exp in self.expenses_sorted_by_date():
+            nd = {}
+            nd['date'] = exp.date.strftime('%d.%m.%y').encode('utf-8')
+            nd['name'] = exp.participant.name.encode('utf-8')
+            nd['description'] = exp.description.encode('utf-8')
+            nd['amount'] = str(exp.amount).encode('utf-8')
+            tempdicts.append(nd)
+
+        writer = csv.DictWriter(target, ["date", "name", "description", "amount"])
+        writer.writerow(dict(date=_('date'), name=_('name'), description=_('description'), amount=_('amount')))
+        writer.writerows(tempdicts)
 
 
 class Participant(Base):
