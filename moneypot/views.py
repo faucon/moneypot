@@ -281,6 +281,8 @@ def login(request):
             return HTTPFound(location=request.route_url('overview'),
                              headers=headers)
         log.debug('Login failed {0}'.format(form.username.value))
+        #clear password as it was wrong
+        form.data['LoginForm--password'] = ''
         request.session.flash(trans(_(u'Login failed<br />Please try again')), 'error')
 
     return dict(
