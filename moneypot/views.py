@@ -75,9 +75,8 @@ class PotView(object):
 
         #check for logged in user
         self.logged_in = authenticated_userid(self.request)
-        logged_in = authenticated_userid(self.request)
-        if logged_in:
-            self.user = DBSession.query(User).filter_by(username=logged_in).first()
+        if self.logged_in:
+            self.user = DBSession.query(User).filter_by(username=self.logged_in).first()
         else:
             self.user = None
 
@@ -267,6 +266,8 @@ class PotView(object):
 @view_config(route_name='login', renderer='templates/login.pt')
 @forbidden_view_config(renderer='templates/login.pt')
 def login(request):
+    if authenticated_userid(request):
+        return HTTPFound(location=request.route_url('overview'))
     bootstrap_responsive_css.need()
     trans = get_localizer(request).translate
     form = login_form(request)
