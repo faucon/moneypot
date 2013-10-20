@@ -35,6 +35,8 @@
                     <thead>
                         <tr>
                             <th i18n:translate="">Pot</th>
+                            <th i18n:translate="">spend total</th>
+                            <th i18n:translate="">your share</th>
                             <th i18n:translate="">you spend</th>
                             <th i18n:translate="">your balance</th>
                             <th i18n:translate="">Actions</th>
@@ -45,6 +47,8 @@
                             <td><!--! show pot name as direct link to pot site -->
                                 <a href="${view.request.route_url('pot', identifier=participation.identifier)}" alt="view this pot" tal:content="participation.pot.name"></a>
                             </td>
+                            <td class="number" tal:content="'%.2f' %participation.pot.sum"></td>
+                            <td class="number" tal:content="'%.2f' %participation.share"></td>
                             <td class="number" tal:content="'%.2f' %participation.sum"></td>
                             <td class="number" tal:content="'%.2f' %participation.result"></td>
                             <td>
@@ -58,6 +62,8 @@
                     </tbody>
                     <thead>
                         <th i18n:translate="">Sum</th>
+                        <th></th>
+                        <th></th>
                         <th class="number" tal:content="'%.2f' %view.user.sum">X €</th>
                         <th class="number" tal:content="'%.2f' %view.user.result">- Y€</th>
                         <th></th>
@@ -73,6 +79,8 @@
                     <thead>
                         <tr>
                             <th i18n:translate="">Pot</th>
+                            <th i18n:translate="">spend total</th>
+                            <th i18n:translate="">your share</th>
                             <th i18n:translate="">you spend</th>
                             <th i18n:translate="">your balance</th>
                             <th i18n:translate="">Actions</th>
@@ -84,6 +92,8 @@
                                 <a href="${view.request.route_url('pot', identifier=participation.identifier)}" alt="view this pot" tal:content="participation.pot.name"
                                     i18n:attributes="alt"></a>
                             </td>
+                            <td class="number" tal:content="'%.2f' %participation.pot.sum"></td>
+                            <td class="number" tal:content="'%.2f' %participation.share"></td>
                             <td class="number" tal:content="'%.2f' %participation.sum"></td>
                             <td class="number" tal:content="'%.2f' %participation.result"></td>
                             <td>

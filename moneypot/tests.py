@@ -14,6 +14,9 @@ def _initTestingDB():
     session = initialize_sql(create_engine('sqlite://'))
     return session
 
+def _make_a_pot():
+    from moneypot.models import Pot
+    return Pot('testpot')
 
 class TestPot(unittest.TestCase):
     def setUp(self):
@@ -24,14 +27,10 @@ class TestPot(unittest.TestCase):
         testing.tearDown()
         self.session.remove()
 
-    def _makeOne(self):
-        from moneypot.models import Pot
-        return Pot('testpot')
-
     def test_sum(self):
         from moneypot.models import Participant
         import datetime
-        pot = self._makeOne()
+        pot = _make_a_pot()
         alice = Participant(name='Alice', email='alice@example.org')
         pot.participants.append(alice)
         transaction.begin()
@@ -40,7 +39,7 @@ class TestPot(unittest.TestCase):
 
     def test_share_factor_sum(self):
         from moneypot.models import Participant
-        pot = self._makeOne()
+        pot = _make_a_pot()
         alice = Participant(name='Alice', email='alice@example.org')
         pot.participants.append(alice)
         alice.share_factor = 2
@@ -56,7 +55,7 @@ class TestPot(unittest.TestCase):
         '''
         from moneypot.models import Participant
         import datetime
-        pot = self._makeOne()
+        pot = _make_a_pot()
         alice = Participant(name='Alice', email='alice@example.org')
         pot.participants.append(alice)
         alice.share_factor = 2
@@ -76,7 +75,7 @@ class TestPot(unittest.TestCase):
         '''
         from moneypot.models import Participant
         import datetime
-        pot = self._makeOne()
+        pot = _make_a_pot()
         self.session.add(pot)
         self.session.flush()  # is needed for pot having an id
         alice = Participant(name='Alice', email='alice@example.org')
@@ -124,6 +123,39 @@ class TestUser(unittest.TestCase):
         self.assertTrue(loaded_test_user.check_password(u'test'))  # the password can be checked, and works also with unicode
 
 
+class TestSolver(unittest.TestCase):
+    def setUp(self):
+        self.config = testing.setUp()
+        self.session = _initTestingDB()
+
+    def tearDown(self):
+        testing.tearDown()
+        self.session.remove()
+
+    def test2paricipantsolver(self):
+        '''
+        create one pot, two participants, one expense
+        solve this: second participant must pay this amount
+        '''
+        from moneypot.models import Participant
+        import datetime
+        pot = _make_a_pot()
+        alice = Participant(name='Alice', email='alice@example.org')
+        pot.participants.append(alice)  # share factor defaults to 1
+        bob = Participant(name='Bob', email='bob@example.org')
+        pot.participants.append(bob)  # with default share factor of 1
+        alice.add_expense(description='Water', amount=10, date=datetime.date.today())
+        #close this pot and create open payment to balance the payments
+        #alice paid 10 Euro, bob has to pay 5 euro to alice
+        payments = pot.close_and_solve()
+        self.assertEqual(len(payments), 1)
+        payment = payments[0]
+        self.assertEqual(payment.from_participant, bob)
+        self.assertEqual(payment.to_participant, alice)
+        self.assertEqual(payment.amount, 5)
+        self.assertEqual(payment.status, 'open')
+
+
 class FunctionalTest(unittest.TestCase):
     '''
     Test the web interface:
@@ -139,10 +171,10 @@ class FunctionalTest(unittest.TestCase):
     def setUp(self):
         from moneypot import main
         self.browser = Browser(wsgi_app=main({},
-                **{'sqlalchemy.url': "sqlite://",
-                    'debugmail': 'true',
-                    'mail.default_sender': 'moneypot@trescher.fr',
-                }))
+                                             **{'sqlalchemy.url': "sqlite://",
+                                                'debugmail': 'true',
+                                                'mail.default_sender': 'moneypot@trescher.fr',
+                                                }))
 
     def tearDown(self):
         testing.tearDown()

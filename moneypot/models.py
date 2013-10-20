@@ -22,6 +22,7 @@ from pyramid.i18n import TranslationStringFactory
 import csv
 
 from moneypot.utils import create_identifier, hash_password
+from moneypot.solver import MatchingSolver
 
 _ = TranslationStringFactory('moneypot')
 
@@ -70,6 +71,17 @@ class Pot(Base):
     def expenses_sorted_by_date(self):
         '''all expenses in this pot, sorted ascending by date'''
         return DBSession.query(Expense).order_by('date').join(Participant).join(Pot).filter_by(id=self.id).all()
+
+    def close_and_solve(self):
+        '''
+        set status to closed and create payments for participants
+        '''
+        result = []
+        solver = MatchingSolver()
+        payments = solver.solve(self)
+        for p in payments:
+            result.append(Payment(*p))
+        return result
 
     def write_csv(self, target):
         '''
@@ -120,9 +132,14 @@ class Participant(Base):
         return sum([e.amount for e in self.expenses])
 
     @property
+    def share(self):
+        '''the share of this participant in the pot's total sum'''
+        return self.share_factor / float(self.pot.share_factor_sum) * self.pot.sum  # attention to python divison! always use float!
+
+    @property
     def result(self):
         '''the amount of money this participant has to get (positive number) or to pay (negative number)'''
-        return self.sum - self.share_factor / float(self.pot.share_factor_sum) * self.pot.sum   # attention to python divison! always use float!
+        return self.sum - self.share
 
 
 class Expense(Base):
@@ -143,13 +160,19 @@ class Payment(Base):
     __tablename__ = 'payment'
     id = Column(Integer, primary_key=True)
     date = Column(Date())
-    status = Column(Enum(u'open', u'closed', name='state'), default='open')
+    status = Column(Enum(u'open', u'cleared', u'verified', name='state'), default='open')
     amount = Column(Float())
     from_participant_id = Column(Integer(), ForeignKey('participant.id'))
     to_participant_id = Column(Integer(), ForeignKey('participant.id'))
 
     from_participant = relationship(Participant, primaryjoin='Participant.id == Payment.from_participant_id')
     to_participant = relationship(Participant, primaryjoin='Participant.id == Payment.to_participant_id')
+
+    def __init__(self, from_participant, to_participant, amount):
+        self.from_participant = from_participant
+        self.to_participant = to_participant
+        self.amount = amount
+        self.status = u'open'
 
 
 class User(Base):

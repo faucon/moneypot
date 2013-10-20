@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: moneypot 0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-03-01 16:13+0100\n"
+"POT-Creation-Date: 2013-05-25 23:05+0200\n"
 "PO-Revision-Date: 2013-01-28 19:47+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: de <LL@li.org>\n"
@@ -100,71 +100,71 @@ msgid ""
 "            "
 msgstr ""
 
-#: moneypot/models.py:48
+#: moneypot/models.py:50 moneypot/models.py:89
 msgid "name"
 msgstr "Name"
 
-#: moneypot/models.py:111
+#: moneypot/models.py:89 moneypot/models.py:136
 msgid "date"
 msgstr "Datum"
 
-#: moneypot/models.py:112
+#: moneypot/models.py:89 moneypot/models.py:137
 msgid "description"
 msgstr "Beschreibung"
 
-#: moneypot/models.py:113
+#: moneypot/models.py:89 moneypot/models.py:138
 msgid "amount"
 msgstr "Betrag"
 
-#: moneypot/models.py:114
+#: moneypot/models.py:139
 msgid "participant"
 msgstr "Teilnehmer"
 
-#: moneypot/views.py:79
+#: moneypot/views.py:48
 msgid "username already taken. Please choose another username."
 msgstr "Dieser Benutzername ist schon vergeben, wähle einen anderen Benutzernamen."
 
-#: moneypot/views.py:102 moneypot/views.py:105
+#: moneypot/views.py:71 moneypot/views.py:74
 msgid "No Pot found"
 msgstr "Kein Pot gefunden"
 
-#: moneypot/views.py:130
+#: moneypot/views.py:99
 msgid "The expense of {0} € was added."
 msgstr "DIe Ausgabe von {0}€ wurde hinzugefügt."
 
-#: moneypot/views.py:180
+#: moneypot/views.py:149
 msgid "Don't do this, not an integer"
 msgstr "Tu's nicht! Keine ganze Zahl angegeben!"
 
-#: moneypot/views.py:189
+#: moneypot/views.py:158
 msgid "Don't do this"
 msgstr "Tu's nicht!"
 
-#: moneypot/views.py:196
+#: moneypot/views.py:165
 msgid "The sum of all factors may not be 0"
 msgstr "Die Summe der Faktoren darf nicht 0 sein."
 
-#: moneypot/views.py:212
+#: moneypot/views.py:181
 msgid "The expense of {0} € got deleted"
 msgstr "Die Ausgabe von {0}€ wurde gelöscht."
 
-#: moneypot/views.py:226
+#: moneypot/views.py:195
 msgid "An error occured while searching the participant"
 msgstr "Beim Suchen des Teilnehmers trat ein Fehler auf."
 
-#: moneypot/views.py:232
+#: moneypot/views.py:201
 msgid "This is not allowed!"
 msgstr "Das ist nicht erlaubt!"
 
-#: moneypot/views.py:240
+#: moneypot/views.py:209
 msgid "The participant {0} and all his expenses got deleted"
 msgstr "Der Teilnehmer {0} und alle seine Ausgaben wurden gelöscht."
 
-#: moneypot/views.py:244
+#: moneypot/views.py:213
 msgid "Delete {0}?"
 msgstr "{0} löschen?"
 
-#: moneypot/views.py:245
+#: moneypot/views.py:214
 msgid ""
 "The participant {0} already entered some expenses. These would be lost. "
 "Are you sure you want to proceed?"
@@ -172,33 +172,33 @@ msgstr ""
 "Der Teilnehmer {0} hat schon Ausgaben gehabt, diese würden verloren "
 "gehen. Bist du sicher, dass du {0} löschen möchtest? "
 
-#: moneypot/views.py:257
+#: moneypot/views.py:235
 msgid "The pot was added to 'My Pots'"
 msgstr "Der Pot wurde zur Liste 'Meine Pots' hinzugefügt."
 
-#: moneypot/views.py:259
+#: moneypot/views.py:237
 msgid "Please log in"
 msgstr "Bitte einloggen"
 
-#: moneypot/views.py:301
+#: moneypot/views.py:279
 msgid "Succesfully logged in"
 msgstr "Erfolgreich eingeloggt!"
 
-#: moneypot/views.py:305
+#: moneypot/views.py:283
 msgid "Login failed<br />Please try again"
 msgstr "Login fehlgeschlagen, <br /> bitte nochmals versuchen."
 
-#: moneypot/views.py:354
+#: moneypot/views.py:361
 msgid "Succesfully changed password"
 msgstr "Das Passwort wurde erfolgreich geändert!"
 
-#: moneypot/views.py:356
+#: moneypot/views.py:363
 msgid "Wrong password. Pleasy try again"
 msgstr "Falsches Passwort, <br /> bitte nochmals versuchen."
 
 #: moneypot/templates/change_password.pt:23
 #: moneypot/templates/change_password.pt:27
-#: moneypot/templates/main_template.pt:40
+#: moneypot/templates/main_template.pt:50
 msgid "Change Password"
 msgstr "Passwort ändern"
 
@@ -233,7 +233,7 @@ msgid "Moneypot - Login"
 msgstr "Moneypot - Login"
 
 #: moneypot/templates/login.pt:15 moneypot/templates/login.pt:24
-#: moneypot/templates/main_template.pt:48
+#: moneypot/templates/main_template.pt:58
 msgid "Login"
 msgstr "Login"
 
@@ -260,7 +260,11 @@ msgstr "Neuer Pot"
 msgid "My Pots"
 msgstr "Meine Pots"
 
-#: moneypot/templates/main_template.pt:43
+#: moneypot/templates/main_template.pt:38 moneypot/templates/pot.pt:47
+msgid "Overview"
+msgstr "Übersicht"
+
+#: moneypot/templates/main_template.pt:53
 msgid "Logout"
 msgstr "Logout"
 
@@ -284,40 +288,50 @@ msgstr "Insgesamt bekommst du ${amount}."
 msgid "Active Pots"
 msgstr "Aktive Pots"
 
-#: moneypot/templates/overview.pt:37 moneypot/templates/overview.pt:75
+#: moneypot/templates/overview.pt:37 moneypot/templates/overview.pt:81
 msgid "Pot"
 msgstr "Pot"
 
-#: moneypot/templates/overview.pt:38 moneypot/templates/overview.pt:76
+#: moneypot/templates/overview.pt:38 moneypot/templates/overview.pt:82
+#| msgid "spend"
+msgid "spend total"
+msgstr "insgesamt ausgegeben"
+
+#: moneypot/templates/overview.pt:39 moneypot/templates/overview.pt:83
+#| msgid "your balance"
+msgid "your share"
+msgstr "Dein Anteil"
+
+#: moneypot/templates/overview.pt:40 moneypot/templates/overview.pt:84
 msgid "you spend"
 msgstr "Du hast bezahlt"
 
-#: moneypot/templates/overview.pt:39 moneypot/templates/overview.pt:77
+#: moneypot/templates/overview.pt:41 moneypot/templates/overview.pt:85
 msgid "your balance"
 msgstr "Dein Ergebnis"
 
-#: moneypot/templates/overview.pt:40 moneypot/templates/overview.pt:78
+#: moneypot/templates/overview.pt:42 moneypot/templates/overview.pt:86
 #: moneypot/templates/pot.pt:125
 msgid "Actions"
 msgstr "Aktionen"
 
-#: moneypot/templates/overview.pt:51
+#: moneypot/templates/overview.pt:55
 msgid "archive this pot"
 msgstr "archiviere diesen Pot"
 
-#: moneypot/templates/overview.pt:60
+#: moneypot/templates/overview.pt:64
 msgid "Sum"
 msgstr "Summe"
 
-#: moneypot/templates/overview.pt:71
+#: moneypot/templates/overview.pt:77
 msgid "Archived Pots"
 msgstr "Archivierte Pots."
 
-#: moneypot/templates/overview.pt:84
+#: moneypot/templates/overview.pt:92
 msgid "view this pot"
 msgstr "Gehe zu diesem Pot"
 
-#: moneypot/templates/overview.pt:90
+#: moneypot/templates/overview.pt:100
 msgid "unarchive this pot"
 msgstr "Hole diesen Pot aus dem Archiv."
 
@@ -340,10 +354,6 @@ msgstr "Du musst ${amount} bezahlen."
 #: moneypot/templates/pot.pt:40
 msgid "You will get ${amount}."
 msgstr "Du bekommst ${amount}."
-
-#: moneypot/templates/pot.pt:47
-msgid "Overview"
-msgstr "Übersicht"
 
 #: moneypot/templates/pot.pt:58
 msgid "Person"
