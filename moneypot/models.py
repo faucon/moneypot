@@ -77,8 +77,8 @@ class Pot(Base):
         set status to closed and create payments for participants
         '''
         result = []
-        solver = MatchingSolver()
-        payments = solver.solve(self)
+        solver = MatchingSolver(self)
+        payments = solver.solve()
         for p in payments:
             result.append(Payment(*p))
         return result

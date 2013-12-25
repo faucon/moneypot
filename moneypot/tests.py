@@ -14,9 +14,11 @@ def _initTestingDB():
     session = initialize_sql(create_engine('sqlite://'))
     return session
 
+
 def _make_a_pot():
     from moneypot.models import Pot
     return Pot('testpot')
+
 
 class TestPot(unittest.TestCase):
     def setUp(self):
@@ -153,6 +155,38 @@ class TestSolver(unittest.TestCase):
         self.assertEqual(payment.from_participant, bob)
         self.assertEqual(payment.to_participant, alice)
         self.assertEqual(payment.amount, 5)
+        self.assertEqual(payment.status, 'open')
+
+    def test3paricipantsolver(self):
+        '''
+        create one pot, 3 participants, one expense
+        solve this: the two others have to pay 1/3 of the total expense.
+        '''
+        from moneypot.models import Participant
+        import datetime
+        pot = _make_a_pot()
+        alice = Participant(name='Alice', email='alice@example.org')
+        pot.participants.append(alice)  # share factor defaults to 1
+        bob = Participant(name='Bob', email='bob@example.org')
+        pot.participants.append(bob)  # with default share factor of 1
+        charlie = Participant(name='charlie', email='charlie@example.org')
+        pot.participants.append(charlie)
+
+        alice.add_expense(description='Water', amount=3, date=datetime.date.today())
+        #close this pot and create open payment to balance the payments
+        #alice paid 3 Euro, bob has to pay 1 euro to alice and charlie too
+        #TODO: there may be problems with half-cent payments... what to do about this?
+        payments = pot.close_and_solve()
+        self.assertEqual(len(payments), 2)
+        payment = payments[0]
+        self.assertEqual(payment.from_participant, bob)
+        self.assertEqual(payment.to_participant, alice)
+        self.assertEqual(payment.amount, 1)
+        self.assertEqual(payment.status, 'open')
+        payment = payments[1]
+        self.assertEqual(payment.from_participant, charlie)
+        self.assertEqual(payment.to_participant, alice)
+        self.assertEqual(payment.amount, 1)
         self.assertEqual(payment.status, 'open')
 
 
