@@ -29,7 +29,7 @@
         The main pot view, show first some general informations about name and total sum
         -->
         <div class="row">
-            <div class="span12">
+            <div class="col-md-12">
                 <h1>${pot.name}</h1>
                 <h3 i18n:translate="">You are visiting this pot as <span tal:content="participant.name" i18n:name="name" /></h3>
                 <h4 i18n:translate="">In total <span tal:content="u'%.2f &euro;' % pot.sum" i18n:name="amount"/> were spend.</h4>
@@ -43,15 +43,15 @@
         </div>
         <br />
         <div class="row">
-            <div class="span12">
+            <div class="col-md-12">
                 <h2 i18n:translate="">Overview</h2>
             </div>
         </div>
         <!--! per-user overview: who has spend how much, and how much does he have to pay? -->
         <div class="row">
-            <div class="span6">
+            <div class="col-md-6">
                 <div class="row">
-                    <div class="span6">
+                    <div> 
                         <table class="table table-striped table-bordered">
                             <thead>
                                 <tr>
@@ -72,34 +72,34 @@
                                             identifier=participant.identifier, 
                                             participant_to_change_id=person.identifier, 
                                             new_factor=int(person.share_factor + 1) )}" 
-                                            class="btn" title="increase factor" rel="tooltip"
-                                            i18n:attributes="title"><i class="icon-arrow-up" alt="increase factor"></i></a> 
+                                            class="btn btn-xs" title="increase factor" rel="tooltip"
+                                            i18n:attributes="title"><i class="glyphicon glyphicon-arrow-up" aria-label='increase factor' alt="increase factor"></i></a> 
 
                                         <a href="${request.route_url('change_factor', 
                                             identifier=participant.identifier, 
                                             participant_to_change_id=person.identifier, 
                                             new_factor=int(person.share_factor - 1))}" 
-                                            class="btn" title="reduce factor" rel="tooltip"
-                                            i18n:attributes="title"><i class="icon-arrow-down" alt="reduce factor"></i></a> 
+                                            class="btn btn-xs" title="reduce factor" rel="tooltip"
+                                            i18n:attributes="title"><i class="glyphicon glyphicon-arrow-down" alt="reduce factor"></i></a> 
                                             </td>
                                     <td class="number" tal:content="'%.2f' %person.result">X €</td>
                                     <td> 
                                         <!--! button to remove this participant from the pot -->
                                         <a href="${request.route_url('remove_participant', identifier=participant.identifier, 
                                             id_participant_to_remove=person.id)}" 
-                                            class="btn" title="remove participant" rel="tooltip" i18n:attributes="title ; alt"><i class="icon-remove"></i></a> 
+                                            class="btn btn-sm" title="remove participant" rel="tooltip" i18n:attributes="title ; alt"><i class="glyphicon glyphicon-remove"></i></a> 
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                 <br />
                 <!--! Button to invite new participants to this pot-->
-                <a class="btn" href="${request.route_url('invite_participant', identifier=participant.identifier)}"> <i class="icon-user"></i> <span i18n:translate="">Invite new Participant</span></a>
+                <a class="btn btn-default" href="${request.route_url('invite_participant', identifier=participant.identifier)}"> <i class="glyphicon glyphicon-user"></i> <span i18n:translate="">Invite new Participant</span></a>
                     </div>
                 </div>
 
             </div>
-            <div class="span6">
+            <div class="col-md-6">
                 <!--! Form for adding a new expense -->
                 <h4 i18n:translate="">Add Expense</h4>
                 <form class="form-horizontal" action="." method="post">
@@ -113,7 +113,7 @@
 
         <br />
         <div class="row">
-            <div class="span12" >
+            <div class="col-md-12" >
             <h2 i18n:translate="">List of expenses</h2>
                 <table class="table table-striped table-bordered">
                     <thead>
@@ -135,12 +135,12 @@
                                 <!--! button to remove a single expense -->
                                 <a 
                                     href="${request.route_url('remove_expense', identifier=participant.identifier, id_to_remove=expense.id)}" 
-                                    class="btn" title="remove expense" i18n:attributes="title"><i class="icon-remove"></i></a> 
+                                    class="btn btn-sm" title="remove expense" i18n:attributes="title"><i class="glyphicon glyphicon-remove"></i></a> 
                             </td>
                         </tr>
                     </tbody>
                 </table>
-                <a class="btn" href="${request.route_url('expenses_download', identifier=participant.identifier)}"> <i class="icon-download"></i> <span i18n:translate="">Download as csv</span></a>
+                <a class="btn btn-default" href="${request.route_url('expenses_download', identifier=participant.identifier)}"> <i class="icon-download"></i> <span i18n:translate="">Download as csv</span></a>
             </div>
 
         </div>
