@@ -13,19 +13,19 @@
  
 <div metal:fill-slot="body">
     <div class="row">
-        <div class="span12">
+        <div class="col-md-12">
             <h1>${view.pot.name}</h1>
         </div>
     </div>
     <br />
     <div class="row">
-        <div class="span6">
+        <div class="col-md-6">
           <h4>${question['title']}</h4>
           ${question['message']}
             <form class="form-horizontal" action="" method="post">
                 <div class="form-actions">
                     <button type="submit" name="submit" value="submit" class="btn btn-primary" i18n:translate="">Yes</button>
-                    <button type="submit" name="abort" value="abort" class="btn" i18n:translate="">No</button>
+                    <button type="submit" name="abort" value="abort" class="btn btn-default" i18n:translate="">No</button>
                 </div>
             </form>
         </div>

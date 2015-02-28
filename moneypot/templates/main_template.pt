@@ -20,15 +20,14 @@
 <div tal:condition="exists: view.logged_in"> 
     <span tal:define="global logged_in view.logged_in"></span>
 </div>
-  <div class="navbar navbar-fixed-top">
-      <div class="navbar-inner">
+  <div class="navbar navbar-default navbar-fixed-top">
         <div class="container">
-          <a class="brand" href="${request.application_url}">Moneypot</a>
-          <ul class="nav">
-                <li><a href="${request.application_url}"><i class="icon icon-star-empty"></i> <span i18n:translate="">New Pot</span></a></li>
+          <a class="navbar-brand" href="${request.application_url}">Moneypot</a>
+          <ul class="nav navbar-nav">
+                <li><a href="${request.application_url}"><i class="glyphicon glyphicon-star-empty"></i> <span i18n:translate="">New Pot</span></a></li>
                 <li tal:condition="logged_in" class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-th-list icon"></i> <span i18n:translate="">My Pots</span></a>
-                    <ul class="dropdown-menu">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"><span i18n:translate="">My Pots</span> <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
                         <li tal:repeat="participation view.user.active_participations">
                             <!--! show pot name as direct link to pot site -->
                            <a href="${view.request.route_url('pot', identifier=participation.identifier)}" alt="view this pot" tal:content="participation.pot.name"></a>
@@ -42,38 +41,37 @@
                 <metal:define metal:define-slot="main-navbar">
                 </metal:define>
             </ul>
-            <ul class="nav pull-right">
+            <ul class="nav navbar-right">
             <li tal:condition="logged_in" class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-user icon"></i> <span tal:replace="logged_in">User</span></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"><span tal:replace="logged_in">User</span> <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                     <li>
-                        <a href="${request.route_url('change_password')}"><i class="icon-edit"></i> <span i18n:translate="">Change Password</span></a>
+                        <a href="${request.route_url('change_password')}"><i class="glyphicon glyphicon-edit"></i> <span i18n:translate="">Change Password</span></a>
                     </li>
                     <li>
-                        <a href="${request.route_url('logout')}"><i class="icon-off"></i> <span i18n:translate="">Logout</span></a>
+                        <a href="${request.route_url('logout')}"><i class="glyphicon glyphicon-off"></i> <span i18n:translate="">Logout</span></a>
                     </li>
                 </ul>
             </li>
             <li tal:condition="not logged_in">
-                <a href="${request.route_url('login')}"><i class="icon icon-arrow-right"></i> <span i18n:translate="">Login</span></a>
+                <a href="${request.route_url('login')}"><i class="glyphicon glyphicon-arrow-right"></i> <span i18n:translate="">Login</span></a>
             </li>
           </ul>
-        </div>
       </div>
   </div>
   <div class="container">
       <div class="content">
         <div class="row" metal:define-slot="messages">
-            <div class="span12" tal:repeat="flashmessage request.session.pop_flash('error')">
+            <div class="col-md-12" tal:repeat="flashmessage request.session.pop_flash('error')">
                 <div class="alert alert-error " >
                      <button type="button" class="close" data-dismiss="alert">&times;</button>
                     <span tal:content="structure: flashmessage"></span>
                 </div>
             </div>
-            <div class="span12" tal:repeat="flashmessage request.session.pop_flash()"> <!-- default queue-->
+            <div class="col-md-12" tal:repeat="flashmessage request.session.pop_flash()"> <!-- default queue-->
                 <div class="well" tal:content="structure: flashmessage"></div>
             </div>
-            <div class="span12" tal:repeat="flashmessage request.session.pop_flash('success')">
+            <div class="col-md-12" tal:repeat="flashmessage request.session.pop_flash('success')">
                 <div class="alert alert-success " >
                      <button type="button" class="close" data-dismiss="alert">&times;</button>
                     <span tal:content="structure: flashmessage"></span>

@@ -4,10 +4,12 @@ from pyramid.httpexceptions import HTTPFound
 from pyramid.exceptions import NotFound
 from pyramid.response import Response
 from pyramid.security import forget, remember, authenticated_userid
-from js.bootstrap import bootstrap_responsive_css, bootstrap_js
+from pyramid.events import NewRequest, subscriber
+
+from js.bootstrap import bootstrap_css, bootstrap_js
 from fanstatic import Group
 
-my_bootstrap = Group([bootstrap_responsive_css, bootstrap_js])
+my_bootstrap = Group([bootstrap_css, bootstrap_js])
 
 import logging
 log = logging.getLogger(__name__)
@@ -31,6 +33,12 @@ from moneypot import mails
 from pyramid.i18n import TranslationStringFactory, get_locale_name, get_localizer
 
 _ = TranslationStringFactory('moneypot')
+
+
+@subscriber(NewRequest)
+def recognize_ssl(event):
+    if event.request.headers.get('X-Forwarded-Scheme') == "https":
+        event.request.scheme = 'https'
 
 
 @view_config(route_name='register', renderer='templates/register.pt')
@@ -268,7 +276,7 @@ class PotView(object):
 def login(request):
     if authenticated_userid(request):
         return HTTPFound(location=request.route_url('overview'))
-    bootstrap_responsive_css.need()
+    bootstrap_css.need()
     trans = get_localizer(request).translate
     form = login_form(request)
     if request.POST and form.validate():

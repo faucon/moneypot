@@ -5,12 +5,12 @@
 <title metal:fill-slot="title">Moneypot</title>
 <body metal:fill-slot="body">
     <div class="row">
-        <div class="span12">
+        <div class="col-md-12">
             <h1 i18n:translate="new Pot">New Pot</h1>
         </div>
     </div>
     <div class="row">
-        <div class="span6">
+        <div class="col-md-6">
             <form class="form-horizontal" action="." method="post">
                 ${structure: form.render()}
                 <div class="form-actions">
@@ -18,7 +18,7 @@
                 </div>
             </form>
         </div>
-        <div class="span6" i18n:translate="homepage_explications">Explication</div>
+        <div class="col-md-6" i18n:translate="homepage_explications">Explication</div>
     </div>
 </body>
 </metal:main_template>
