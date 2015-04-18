@@ -28,6 +28,7 @@ def main(global_config, **settings):
     config = Configurator(settings=settings, session_factory=my_session_factory, root_factory='moneypot.RootFactory')
     config.add_translation_dirs('moneypot:locale')
     config.include('pyramid_chameleon')
+    config.include('deform_autoneed')
 
     if settings['debugmail'] == 'true':
         config.include('pyramid_mailer.testing')

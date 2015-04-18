@@ -36,3 +36,11 @@ install it (as develop egg)::
 this should fetch all dependencies, then you can run moneypot on your local machine with::
 
     pserve development.ini
+
+Ideas for new features
+^^^^^^^^^^^^^^^^^^^^^^
+
+ * Mouseover-Tip in Overview: who are other participants in this pot?
+ * Solver: how to solve the open debts with the least transactions
+ * Manage payments (from solver): Open, transfer, received
+ * Edit expenses

@@ -1,6 +1,34 @@
 '''
-FormAlchemy Forms can translate labels of fields, but for this to work they need to know the request!
+Forms with colander/deform
 '''
+import colander
+import deform
+import colanderalchemy
+
+import logging
+log = logging.getLogger(__name__)
+
+from moneypot.models import Expense, Participant
+
+from pyramid.i18n import TranslationStringFactory
+
+_ = TranslationStringFactory('moneypot')
+
+
+class NewPotSchema(colander.MappingSchema):
+    potname = colander.SchemaNode(colander.String(),
+                                  title=_(u'Pot name'))
+    yourname = colander.SchemaNode(colander.String(),
+                                   title=_(u'Your name'))
+    yourmail = colander.SchemaNode(colander.String(),
+                                   title=_(u'Your email'),
+                                   validator=colander.Email())
+
+
+def home_form():
+    return deform.Form(NewPotSchema(), formid='newpot', buttons=(_(u'Create Pot'),))
+
+
 from formalchemy import forms
 from formalchemy import tables
 from formalchemy.fields import Field
@@ -12,16 +40,7 @@ from fa.bootstrap import fanstatic_resources
 
 import datetime
 
-import logging
-log = logging.getLogger(__name__)
-
-from moneypot.models import Expense, Participant
-
 from moneypot.renderer import BootstrapDateFieldRenderer
-from pyramid.i18n import TranslationStringFactory
-
-_ = TranslationStringFactory('moneypot')
-
 
 class FieldSet(forms.FieldSet):
 
@@ -53,25 +72,6 @@ class ModelView(Base):
     def update_resources(self):
         """A hook to add some fanstatic resources"""
         fanstatic_resources.bootstrap.need()
-
-
-def home_form(request, data=None):
-    '''
-    create Form for creating a Pot with one participant
-    '''
-
-    #this class is local, to fix a problem with persistent instances if the fields,
-    #so not only new instances are created (with the same instances of Fields every time for all form instances)
-    #but the whole class is created when this function is called
-    class HomeForm(object):
-        '''form for the home view'''
-
-        potname = Field().label(_(u'Pot name')).required()
-        yourname = Field().label(_(u'Your name')).required()
-        yourmail = Field().label(_(u'Your email')).validate(validators.email)
-
-    home_fs = FieldSet(HomeForm, data=data, request=request)
-    return home_fs
 
 
 def expense_form(DBSession, participant, request, data=None):

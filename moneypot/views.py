@@ -9,6 +9,9 @@ from pyramid.events import NewRequest, subscriber
 from js.bootstrap import bootstrap_css, bootstrap_js
 from fanstatic import Group
 
+from deform_autoneed import need_lib
+from deform import ValidationFailure
+
 my_bootstrap = Group([bootstrap_css, bootstrap_js])
 
 import logging
@@ -325,31 +328,32 @@ class UserView(object):
     @view_config(route_name='home', renderer='templates/home.pt')
     def view_home(self):
         request = self.request
-        my_bootstrap.need()    # we need css
         log.debug("Locale: " + get_locale_name(request))
         if not request.POST and self.logged_in and self.user:
-            data = {'HomeForm--yourmail': self.user.email,
-                    'HomeForm--yourname': self.user.username
-                    }
+            data = {'yourmail': self.user.email,
+                    'yourname': self.user.username}
         else:
             data = None
-        form = home_form(request, data=request.POST or data)
-        if request.POST and form.validate():  # if submitted and and valid, create Pot and participant, and then go to pot site
+        form = home_form()
+
+        if self.request.POST:  # detect that the submit button was clicked
+            controls = self.request.POST.items()  # get the form controls
+            try:
+                appstruct = form.validate(controls)   # call validate
+            except ValidationFailure, e:  # catch the exception
+                return {'form': e, 'data': data, 'logged_in': self.logged_in}  # re-render the form with an exception
+
             log.debug("gutes Formular!")
-            pot = Pot(form.potname.value)
+            pot = Pot(appstruct['potname'])
             DBSession.add(pot)
-            participant = Participant(name=form.yourname.value, email=form.yourmail.value)
+            participant = Participant(name=appstruct['yourname'], email=appstruct['yourmail'])
             pot.participants.append(participant)
-            if form .yourmail.value:
-                mails.new_pot_mail(request, pot, participant, request.route_url('pot', identifier=participant.identifier))
+            mails.new_pot_mail(request, pot, participant, request.route_url('pot', identifier=participant.identifier))
             if self.logged_in:
                 self.user.participations.append(participant)
             return HTTPFound(location=request.route_url('pot', identifier=participant.identifier))
 
-        log.debug("Form: %s with model %s", str(id(form)), str(form.model))
-        log.debug("Field: %s", str(id(form.potname)))
-        log.debug("Form has errors? %s", str(form.errors))
-        return {'form': form, 'logged_in': self.logged_in}
+        return {'form': form, 'data': data, 'logged_in': self.logged_in}
 
     @view_config(route_name='overview', renderer='templates/overview.pt')
     def overview(self):
