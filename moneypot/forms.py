@@ -84,7 +84,7 @@ def expense_form(DBSession, participant, request, data=None):
         data = {'Expense--date__year': str(tod.year),
                 'Expense--date__month': str(tod.month),
                 'Expense--date__day': str(tod.day),
-                'Expense--participant_id': participant.id}
+                'Expense--participant_id': str(participant.id)}
     expense_fs = FieldSet(Expense, session=DBSession, data=data, request=request)
     expense_fs.configure(
             options=[expense_fs.participant.dropdown(options=participant.pot.participants)],
